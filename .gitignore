@@ -1,0 +1,10 @@
+node_modules/
+dist/
+release/
+paket/
+*.log
+
+# Gebaute Programmpakete gehoeren nicht ins Repo
+*.asar
+*.exe
+*.zip

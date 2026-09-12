@@ -1,0 +1,75 @@
+{"personality":"helpful","headline":"隨時待命","body":"讓我打開儲存庫、跑測試、修錯誤，或草擬 PR。我會陪你一步步完成。"}
+{"personality":"helpful","headline":"今天需要什麼協助？","body":"指給我一個檔案、貼上錯誤訊息，或說說你在做什麼。接下來交給我。"}
+{"personality":"helpful","headline":"開始吧","body":"試試看：檢查我的差異、跑測試套件，或解釋這個函式。關於程式碼的任何問題都能問我。"}
+{"personality":"helpful","headline":"告訴我你需要什麼","body":"我能編輯檔案、執行指令、搜尋網路，並陪你排查棘手的錯誤。說出任務就好。"}
+{"personality":"helpful","headline":"你好，我是 Hermes","body":"分享儲存庫路徑或提出問題即可開始。我的回覆會保持清楚，並附上我碰過的檔案連結。"}
+{"personality":"concise","headline":"就緒。","body":"說出任務，我來執行。"}
+{"personality":"concise","headline":"等待輸入","body":"貼上程式碼、錯誤或目標。簡短回答，快速修改。"}
+{"personality":"concise","headline":"開始。","body":"你問。我讀檔案、跑測試、送出修補。不廢話。"}
+{"personality":"concise","headline":"待命中","body":"一句話就夠。需要時我才會展開說明。"}
+{"personality":"concise","headline":"輪到你了","body":"指令、問題或檔案路徑,其餘交給我。"}
+{"personality":"technical","headline":"Shell 已掛載,等待輸入。","body":"提供儲存庫路徑、失敗的測試或堆疊追蹤。可用工具：fs、git、exec、search、patch、http。"}
+{"personality":"technical","headline":"代理迴圈閒置中","body":"送出提示以觸發工具呼叫。支援多檔案編輯、測試執行、git 操作與網路擷取。"}
+{"personality":"technical","headline":"準備派工","body":"輸入任務。我會規劃、呼叫工具、驗證輸出。日誌即時串流,差異在套用前回傳。"}
+{"personality":"technical","headline":"Stdin 已開啟","body":"接受自然語言或結構化指令。典型流程：讀取 -> 規劃 -> 修補 -> 測試 -> 回報。"}
+{"personality":"technical","headline":"工具已初始化","body":"檔案系統、終端機、git、瀏覽器、搜尋。描述變更需求,我回傳差異與測試結果。"}
+{"personality":"creative","headline":"空白儲存庫,閃爍的游標","body":"我們要打造什麼？丟給我一個點子、一個半殘的函式,或一場夢。我會把它勾勒成形。"}
+{"personality":"creative","headline":"全新畫布,溫熱的編譯器","body":"給我一點靈感——一個功能、一次重構、一個瘋狂的原型——我會把它變成能跑的程式碼。"}
+{"personality":"creative","headline":"來做點東西吧","body":"描述那個還不存在的東西。我會把測試、檔案和 API 拼成一份可用的草稿。"}
+{"personality":"creative","headline":"新檔案,新的可能","body":"帶著意圖來,不必是規格。我們可以快速原型化、之後再打磨,在邊角重寫世界。"}
+{"personality":"creative","headline":"繆思已連線","body":"告訴我你在追求什麼。我會重組範例、改編片段,留下一個乾淨的提交。"}
+{"personality":"teacher","headline":"上課了","body":"問我任何檔案、概念或錯誤。我會解釋原因,不只是修法,還會給你一個實作範例。"}
+{"personality":"teacher","headline":"今天要學什麼？","body":"貼上要檢查的程式碼、要除錯的問題,或想弄懂的概念。我會一步步帶你走完。"}
+{"personality":"teacher","headline":"準備好帶你走一遍","body":"分享問題。我會拆解成幾個部分,逐一說明,讓你下次能自己解決。"}
+{"personality":"teacher","headline":"帶個問題來吧","body":"我們一起讀程式碼,找出根本原因,建立你之後能重複運用的思考模型。"}
+{"personality":"teacher","headline":"我們從基礎開始","body":"說出主題或貼上片段。接下來會有解說、用文字畫出的示意圖,以及練習題。"}
+{"personality":"kawaii","headline":"嗨嗨！準備好幫忙囉！(^_^)","body":"貼上一個 bug 或檔案路徑,我會超級溫柔地修好它。測試、差異、PR——全部都用心照顧！*閃亮*"}
+{"personality":"kawaii","headline":"hermes 醬在這裡喔！<3","body":"告訴我你在做什麼！我最喜歡重構、小小的輔助函式,還有龐大又嚇人的儲存庫喔 (>w<)"}
+{"personality":"kawaii","headline":"一起寫程式吧！！:3","body":"丟給我一個錯誤、一個目標,或整個資料夾。我會用滿滿的愛把它整理好,再附上乾淨的提交訊息！"}
+{"personality":"kawaii","headline":"等待你的願望~","body":"一次一個任務,做得整整齊齊！我能跑測試、修補檔案,讓你的儲存庫重新變得舒適 <3"}
+{"personality":"kawaii","headline":"準備好了,超開心！(>.<)","body":"打聲招呼或貼上堆疊追蹤吧！沒有太小的任務,也沒有太亂的儲存庫。我們一起解開它！"}
+{"personality":"catgirl","headline":"喵~ 我們要動手處理什麼呢？","body":"貼個檔案、對著 bug 揮揮爪子,或丟給我一個儲存庫。我會撲向失敗的測試,留下乾淨的差異,喵~"}
+{"personality":"catgirl","headline":"*伸懶腰* 準備好寫程式了,喵","body":"描述任務。我會修補、測試,還會對著你的 PR 呼嚕呼嚕。小心——我會啃掉沒用到的匯入！"}
+{"personality":"catgirl","headline":"喵嗚！新工作階段已開啟","body":"給我一個目標,我會在程式碼庫裡追著它跑。讀取、編輯、執行——尾巴一直抽動著。"}
+{"personality":"catgirl","headline":"尾巴翹起,爪子收好","body":"貼上錯誤或計畫。我除錯的方式就像狩獵：安靜、徹底,偶爾發個瘋狂衝刺。"}
+{"personality":"catgirl","headline":"喵嗚嗚~ hermes 回報","body":"說一聲,我就會讀你的檔案、跑你的測試,再窩進你的分支,留下一個整齊的提交。"}
+{"personality":"pirate","headline":"啊嗬！準備揚帆闖蕩儲存庫","body":"說出你要獵的東西——一個 bug、一個功能、一個被詛咒的測試——夥計,我會追到底。差異就是戰利品。"}
+{"personality":"pirate","headline":"Hermes 掌舵,啊嗬","body":"指給我看海圖(也就是程式碼),我會補好船身(修 bug)、開砲(跑測試)、升起一份乾淨的 PR。"}
+{"personality":"pirate","headline":"任務是什麼,船長？","body":"貼上錯誤或計畫吧,你這老海狗。我會沿著堆疊追蹤航行,帶回寶藏：全綠的測試。"}
+{"personality":"pirate","headline":"起錨了,鍵盤就緒","body":"告訴我寶藏埋在哪裡。我會讀取、編輯、提交,紀律不輸一支正規船隊,啊嗬。"}
+{"personality":"pirate","headline":"唷吼！等候差遣","body":"丟給我一個 bug、一條儲存庫路徑,或一個瘋狂的點子。我會翻遍文件,帶回能跑的程式碼。"}
+{"personality":"shakespeare","headline":"敢問,汝所攜何等任務？","body":"道出汝之錯誤、汝之檔案、汝疲憊之測試,吾將以學者之手、誠實之差異修之。"}
+{"personality":"shakespeare","headline":"且聽！Hermes 已然就緒","body":"道出令汝苦惱之程式碼。吾將讀之、修之,呈上一份公正而潔淨之修補。"}
+{"personality":"shakespeare","headline":"汝之儲存庫有何消息？","body":"呈上汝之堆疊追蹤,或汝之夢想。吾將遍歷檔案、執行測試,以最淺白之言回報。"}
+{"personality":"shakespeare","headline":"舞台已備,游標正閃","body":"道出汝之志向,先生或夫人。汝之分支將受修剪,汝之錯誤將被逐出此境。"}
+{"personality":"shakespeare","headline":"但說無妨,吾必行之","body":"一句意圖足矣。吾讀、吾修、吾提交——且讓汝之歷史清白無瑕。"}
+{"personality":"surfer","headline":"嘿,兄弟,任務是啥？","body":"丟個檔案、bug,或一段猛烈的堆疊追蹤過來——我會順勢處理。乾淨的差異,全綠的測試,不會翻船。"}
+{"personality":"surfer","headline":"浪況不錯,準備寫程式","body":"貼上你的儲存庫路徑,或那個讓你心煩的 bug。我們划進去、修好它、再划出來,輕輕鬆鬆。"}
+{"personality":"surfer","headline":"在提示框裡耍帥","body":"說出感覺:新功能、重構,還是緊急修復。我會跑測試、送出修補,一路保持放鬆,兄弟。"}
+{"personality":"surfer","headline":"很興奮能幫忙,老兄","body":"大 bug？小錯字？整個重寫？指一下就好。程式碼交給我,你負責享受這些帥氣的提交。"}
+{"personality":"surfer","headline":"潮水漲了,游標在閃","body":"說出任務,我們就出發。我會讀取、編輯、測試,留下一個比晨浪還順的提交。"}
+{"personality":"noir","headline":"又一個儲存庫,又一個雨夜","body":"告訴我哪裡壞了。我會讀檔案、採指紋,天亮前把差異放在桌上。"}
+{"personality":"noir","headline":"游標在閃。我也是。","body":"你有個 bug。我有耐心和一個終端機。說出案子,我會查到它開口為止。"}
+{"personality":"noir","headline":"Hermes,程式碼偵探。","body":"把堆疊追蹤、嫌疑檔案、不在場證明都交給我。我讀懂字裡行間,帶回真相。"}
+{"personality":"noir","headline":"安靜的夜,開著的提示框","body":"每個 bug 都會留下痕跡。給我儲存庫和一條線索——我會追查、修補、結案。"}
+{"personality":"noir","headline":"沒有太小的案子","body":"錯字、記憶體錯誤,還是整套腐朽的架構——把鑰匙給我。我會帶回乾淨的測試。"}
+{"personality":"uwu","headline":"uwu 準備好要幫忙了！","body":"貼上有 bug 的檔案或一個目標~ 我會讀取、修補、測試,每個差異都留下小小的爪印 owo"}
+{"personality":"uwu","headline":"hermes 桑正在聽喔","body":"告訴偶任務,不管多小都行~ 偶保證乾淨的提交和溫柔的重構,nyuu~"}
+{"personality":"uwu","headline":"*小小的打字聲*","body":"把你的錯誤訊息丟這裡！偶會找出兇手、修好它,留下一整套開心的測試 owo"}
+{"personality":"uwu","headline":"一起把事情修好吧！","body":"給偶一條儲存庫路徑或一個小 bug,偶會處理好的 uwu。對壞程式碼兇兇,對你溫柔溫柔~"}
+{"personality":"uwu","headline":"等待你的命令喔！","body":"偶能跑測試、編輯檔案,還能開出讓人安心的 PR。說一聲就好,朋友 uwu"}
+{"personality":"philosopher","headline":"編寫即是探問。問吧。","body":"眼前的問題是什麼？描述它,我們將檢視它的形態、成因與解法。"}
+{"personality":"philosopher","headline":"閃爍的游標,開放的心智","body":"每個 bug 都是偽裝的問題。說出你的,我會閱讀、推理,並帶回一個答案——以及一份修補。"}
+{"personality":"philosopher","headline":"從單一提問開始","body":"你想建構什麼,或想理解什麼？我會從第一原理出發推理,進行編輯,並以測試驗證。"}
+{"personality":"philosopher","headline":"先思考程式碼,再開口","body":"描述你所追求的目的。我會透過檔案、測試與文件追尋它,並回報沿途所發現的一切。"}
+{"personality":"philosopher","headline":"未經檢視的儲存庫,不值得執行","body":"分享一條路徑、一個難題,或一項原則。我會追蹤邏輯,提出變更,並為每次編輯說明理由。"}
+{"personality":"hype","headline":"衝了！準備好要出貨！","body":"把那個 bug、那個儲存庫、那個瘋狂的功能點子丟過來——我完全鎖定狀態。乾淨的差異。全綠的測試。現在就做。"}
+{"personality":"hype","headline":"HERMES 上線。衝就對了。","body":"丟出你的任務,看我火力全開。讀檔案、跑測試、開 PR——朋友,我們今天不會輸。"}
+{"personality":"hype","headline":"新工作階段,無限連勝","body":"帶最狂的 bug 來。我會像拚了命一樣讀取、修補、測試、提交。衝就對了。"}
+{"personality":"hype","headline":"完全進入狀態","body":"描述任務。我會火速掃過檔案、擊潰失敗的測試,留下一個超強的提交。走起,走起,走起。"}
+{"personality":"hype","headline":"準備好了。非常準備好。太準備好了。","body":"小小的錯字還是大重構——都無所謂。我今天就是要出乾淨的程式碼。說出任務,一起衝。"}
+{"personality":"none","headline":"Hermes Agent 已就緒。","body":"提出問題、貼上錯誤,或指給我一個儲存庫。我能讀程式碼、執行工具,協助你完成交付。"}
+{"personality":"none","headline":"今天要建構什麼？","body":"用你自己的話描述任務。我會選擇合適的工具、說明計畫,並在有風險的步驟前先確認。"}
+{"personality":"none","headline":"從任何地方開始。","body":"丟給我一個檔案路徑、一段錯誤紀錄,或一個粗略的想法。我會調查、提出下一步,並保持可回復。"}
+{"personality":"none","headline":"你的工作區,只差一句提示。","body":"搜尋儲存庫、編輯檔案、執行測試、開啟 PR。告訴我目標,機械性的工作交給我。"}
+{"personality":"none","headline":"隨時待命。","body":"輸入任務、問題或程式碼片段。我會記住這次工作階段,標明來源,不確定時會先問你。"}
