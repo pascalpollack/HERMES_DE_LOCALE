@@ -14,6 +14,12 @@ zieht sie nach und sorgt dafür, dass das künftig ohne Handarbeit passiert.
 
 Gebaut gegen **Commit `d595e636c8`**, Desktop weiterhin `0.17.2`.
 
+Noch am selben Tag lief ein weiteres Update durch (`b6b53c69a6`). Das
+Werkzeug hat es von allein bemerkt und nachgezogen - der erste Ernstfall,
+ungeplant. Der Patch blieb unveraendert gueltig, neue Texte brachte dieses
+Update keine. Gegengeprueft mit `git apply --check -R`: er beschreibt den
+Unterschied auf **beiden** Staenden exakt.
+
 ### Neun neue Texte des Updates
 
 Der Compiler hat sie namentlich genannt, keiner fiel still auf Englisch
