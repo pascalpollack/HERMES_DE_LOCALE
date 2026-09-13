@@ -1,11 +1,56 @@
 # Changelog
 
 Alle nennenswerten Änderungen an diesem Paket. Die Versionsnummer beschreibt
-**dieses Paket**, nicht Hermes selbst - gebaut wurde durchgehend gegen
-**Hermes Desktop 0.17.2**, Commit `a84a2223f8`.
+**dieses Paket**, nicht Hermes selbst. Der Bezugsstand wandert mit den
+Hermes-Updates; welcher es ist, steht beim jeweiligen Eintrag.
 
 Die Statuszeile der App zeigt `v0.21.2`: das ist die Version des
 Hermes-**Agenten**, nicht die der Desktop-App. Zwei Zahlen, zwei Dinge.
+
+## 1.1.0 - 2026-09-13
+
+Ein Hermes-Update hat die deutsche Fassung wieder entfernt. Diese Fassung
+zieht sie nach und sorgt dafür, dass das künftig ohne Handarbeit passiert.
+
+Gebaut gegen **Commit `d595e636c8`**, Desktop weiterhin `0.17.2`.
+
+### Neun neue Texte des Updates
+
+Der Compiler hat sie namentlich genannt, keiner fiel still auf Englisch
+zurück - genau dafür ist `de.ts` als `Translations` typisiert:
+
+`sharedGatewayRestartTitle`, `sharedGatewayRestartDescription`,
+`sharedGatewayRestartConfirm`, `sharedGatewayRestarted`, `sharedListenerUrl`,
+`appliedLive`, `connectingLive`, `pastedContent`, `pasteAttachFailed`.
+
+Die i18n-Tests sind mit dem Update von 31 auf **34** gewachsen, alle grün.
+
+### Neu: `werkzeug/` - Nachziehen ohne Handarbeit
+
+`deutsch_nachziehen.py` macht, was sonst von Hand nötig war: Patch einspielen,
+`tsc --noEmit` als Messstelle lesen, neue Schlüssel an den Hermes-Agenten
+(`hermes -z`) zum Übersetzen geben, gegenprüfen, Tests fahren, bauen,
+Hermes neu starten. Eingefügt wird **im Werkzeug**, nicht von Hermes: der
+Agent liefert JSON, die Datei schreibt das Skript.
+
+Läuft über den Autostart bei der Anmeldung, nicht im Stundentakt. Ein Build
+muss Hermes beenden; bei der Anmeldung kostet das nichts, mitten in der Arbeit
+wäre es ein Übergriff.
+
+**Zwei Befunde aus dem Negativtest**, beide gefunden, weil die kaputte Fassung
+tatsächlich hergestellt wurde statt nur beschrieben:
+
+- `tsc` meldet fehlende Schlüssel in **zwei** Formen: `TS2739` im Plural,
+  `TS2741` im Singular mit völlig anderem Wortlaut. Das Werkzeug kannte nur
+  die Pluralform - und der Normalfall eines Updates ist *ein* neuer Text.
+  Die Wache hätte genau dann geschwiegen, wenn sie gebraucht wird.
+- Dahinter der eigentliche Fehler: ein Compilerfehler, den kein Muster
+  erkennt, wurde als "nichts zu tun" gelesen. Entwarnung aus Unkenntnis.
+  Jetzt bricht das Werkzeug in dem Fall ab und zeigt die Rohausgabe.
+
+Geprüft wurde gegen den echten Bestand: ein Schlüssel aus `de.ts` entfernt,
+Werkzeug laufen lassen, Ergebnis mit der von Hand gebauten Datei verglichen -
+**byteidentisch**.
 
 ## 1.0.0 - 2026-09-12
 

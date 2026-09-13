@@ -1,8 +1,8 @@
 # Hermes Desktop - deutsche Locale (`de`)
 
-**Version 1.0.0**, 12.09.2026.
+**Version 1.1.0**, 13.09.2026.
 
-Gebaut gegen **Hermes Desktop 0.17.2**, Commit `a84a2223f8`.
+Gebaut gegen **Hermes Desktop 0.17.2**, Commit `d595e636c8`.
 
 > Die Statuszeile der laufenden App zeigt eine **andere** Zahl, etwa
 > `v0.21.2 (+19) a84a222`. Das ist kein Widerspruch: `0.21.2` ist die Version
@@ -28,6 +28,7 @@ Englisch. `defineLocale()` für Teilfassungen wird bewusst **nicht** benutzt.
 src/                                      dieselben Dateien einzeln, im Zuschnitt
                                           von apps/desktop/src/
 installer/                                Batch zum Einspielen und Zurücknehmen
+werkzeug/                                 Nachziehen nach einem Hermes-Update
 docs/BERICHT_A240.md                      Kernkatalog: Messwerte, Befunde, Fallen
 docs/BERICHT_A241.md                      Plugin-Sprachpakete und Startbildschirm
 docs/BERICHT_A242.md                      Tab-Beschriftungen
@@ -84,6 +85,39 @@ stempelt. Ein reiner asar-Tausch lässt die App an ihrer eigenen Prüfung
 scheitern. Der Batch spielt darum `Hermes.exe` und den ganzen `resources`-Ordner
 ein, legt vorher eine Sicherung an und hat mit
 `Deutsch_zuruecknehmen.bat` einen geprobten Rückweg.
+
+## Nach einem Hermes-Update
+
+**Ein Update entfernt die deutsche Fassung.** Es setzt den Quellbaum zurück,
+`de.ts` ist weg, der nächste Build ist englisch. Das ist kein Fehler des
+Pakets, sondern die Natur eines Patches gegen einen fremden Baum.
+
+`werkzeug/deutsch_nachziehen.py` stellt den Zustand wieder her:
+
+```bash
+python werkzeug/deutsch_nachziehen.py                 # nachziehen und bauen
+python werkzeug/deutsch_nachziehen.py --nur-pruefen   # nur messen
+```
+
+Sechs Schritte: Patch einspielen, `tsc --noEmit` lesen, neue Schlüssel an
+den Hermes-Agenten (`hermes -z`) zum Übersetzen geben, gegenprüfen, die
+i18n-Tests fahren, bauen und Hermes neu starten.
+
+**Der Compiler ist die Meldestelle.** Weil `de.ts` als `Translations`
+typisiert ist, nennt `tsc` jeden Schlüssel namentlich, den das Update neu
+gebracht hat. Nichts fällt still auf Englisch zurück. Beim Update auf
+`d595e636c8` waren es neun.
+
+**Hermes schreibt nicht selbst in die Datei.** Der Agent liefert JSON, das
+Werkzeug fügt ein - und zwar am Anker des Vorgängerschlüssels aus `en.ts`,
+gesucht nur innerhalb des Blocks, den `tsc` gemeldet hat. Ein Allerweltsname
+wie `search` kommt in `de.ts` sonst mehrfach vor.
+
+Passt der Patch nicht mehr, bricht das Werkzeug ab und sagt es. Ein Konflikt
+im Quellcode ist kein Fall für einen Automaten.
+
+Ausgelöst wird der Lauf beim **Anmelden**, über eine Verknüpfung im
+Autostart - nicht im Stundentakt: ein Build muss Hermes beenden.
 
 ## Stand stromaufwärts
 

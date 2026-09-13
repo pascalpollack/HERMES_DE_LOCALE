@@ -8,3 +8,8 @@ paket/
 *.asar
 *.exe
 *.zip
+
+# Laufprotokoll des Nachzieh-Werkzeugs, gehoert zum Rechner, nicht ins Repo
+werkzeug/nachziehen_log.md
+__pycache__/
+*.pyc
