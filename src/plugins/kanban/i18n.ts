@@ -167,6 +167,9 @@ type KanbanMessages = {
   // board switcher
   board: string
   newBoard: string
+  /** Tooltip on the page-header trigger — names the ACTION, since the visible
+   *  text is the board's own name and reads as a static label otherwise. */
+  switchBoard: string
   newBoardDots: string
   // Menu labels are bare verbs — the board they act on is the one named in the
   // switcher's trigger. The nouns come back for the native file-dialog and
@@ -208,6 +211,8 @@ type KanbanMessages = {
     blockedTitle: string
     blockLoopTitle: string
     gaveUpTitle: string
+    /** Body for gave_up — the raw worker error rides in the toast `detail`. */
+    gaveUpBody: string
     crashedTitle: string
     timedOutTitle: string
     openKanban: string
@@ -387,6 +392,7 @@ export const en: KanbanMessages = {
   working: 'working',
   board: 'Board',
   newBoard: 'New board',
+  switchBoard: 'Switch board',
   newBoardDots: 'New board…',
   exportDots: 'Export…',
   importDots: 'Import…',
@@ -424,9 +430,10 @@ export const en: KanbanMessages = {
     completedTitle: 'Task completed',
     blockedTitle: 'Task blocked — needs your input',
     blockLoopTitle: 'Task routed to triage — needs a decision',
-    gaveUpTitle: 'Task gave up',
-    crashedTitle: 'Worker crashed — will retry',
-    timedOutTitle: 'Task timed out — will retry',
+    gaveUpTitle: 'Task stopped',
+    gaveUpBody: 'Hermes couldn’t finish this task. Open Kanban to see why and reassign it.',
+    crashedTitle: 'Task hit a problem — Hermes will retry it automatically',
+    timedOutTitle: 'Task took too long — Hermes will retry it automatically',
     openKanban: 'Open Kanban',
     artifacts: (n: number) => `${n} artifacts`
   }
@@ -603,6 +610,7 @@ const ja: KanbanMessages = {
   working: '作業中',
   board: 'ボード',
   newBoard: '新しいボード',
+  switchBoard: 'ボードを切り替え',
   newBoardDots: '新しいボード…',
   exportDots: 'エクスポート…',
   importDots: 'インポート…',
@@ -640,9 +648,10 @@ const ja: KanbanMessages = {
     completedTitle: 'タスク完了',
     blockedTitle: 'タスクがブロック中 — 入力が必要です',
     blockLoopTitle: 'タスクをトリアージへ移動 — 判断が必要です',
-    gaveUpTitle: 'タスクを断念しました',
-    crashedTitle: 'ワーカーがクラッシュ — 再試行します',
-    timedOutTitle: 'タスクがタイムアウト — 再試行します',
+    gaveUpTitle: 'タスクが停止しました',
+    gaveUpBody: 'Hermes はこのタスクを完了できませんでした。かんばんを開いて原因を確認し、再割り当てしてください。',
+    crashedTitle: 'タスクで問題が発生 — Hermes が自動で再試行します',
+    timedOutTitle: 'タスクに時間がかかりすぎました — Hermes が自動で再試行します',
     openKanban: 'かんばんを開く',
     artifacts: (n: number) => `成果物 ${n} 件`
   }
@@ -817,6 +826,7 @@ const zh: KanbanMessages = {
   working: '进行中',
   board: '面板',
   newBoard: '新建面板',
+  switchBoard: '切换面板',
   newBoardDots: '新建面板…',
   exportDots: '导出…',
   importDots: '导入…',
@@ -853,9 +863,10 @@ const zh: KanbanMessages = {
     completedTitle: '任务已完成',
     blockedTitle: '任务受阻 — 需要你的输入',
     blockLoopTitle: '任务已转入分类 — 需要人工决定',
-    gaveUpTitle: '任务已放弃',
-    crashedTitle: '工作单元崩溃 — 将重试',
-    timedOutTitle: '任务超时 — 将重试',
+    gaveUpTitle: '任务已停止',
+    gaveUpBody: 'Hermes 无法完成这个任务。打开看板查看原因并重新分配。',
+    crashedTitle: '任务遇到问题 — Hermes 将自动重试',
+    timedOutTitle: '任务耗时过长 — Hermes 将自动重试',
     openKanban: '打开看板',
     artifacts: (n: number) => `${n} 个产物`
   }
@@ -1030,6 +1041,7 @@ const zhHant: KanbanMessages = {
   working: '進行中',
   board: '面板',
   newBoard: '新增面板',
+  switchBoard: '切換面板',
   newBoardDots: '新增面板…',
   exportDots: '匯出…',
   importDots: '匯入…',
@@ -1066,15 +1078,17 @@ const zhHant: KanbanMessages = {
     completedTitle: '任務已完成',
     blockedTitle: '任務受阻 — 需要你的輸入',
     blockLoopTitle: '任務已轉入分類 — 需要人工決定',
-    gaveUpTitle: '任務已放棄',
-    crashedTitle: '工作單元當機 — 將重試',
-    timedOutTitle: '任務逾時 — 將重試',
+    gaveUpTitle: '任務已停止',
+    gaveUpBody: 'Hermes 無法完成這個任務。開啟看板查看原因並重新指派。',
+    crashedTitle: '任務遇到問題 — Hermes 將自動重試',
+    timedOutTitle: '任務耗時過長 — Hermes 將自動重試',
     openKanban: '開啟看板',
     artifacts: (n: number) => `${n} 個產物`
   }
 }
 
 const de: KanbanMessages = {
+  switchBoard: 'Board wechseln',
   plugin: {
     name: 'Kanban',
     description:
@@ -1280,6 +1294,7 @@ const de: KanbanMessages = {
   profileGoodAt: 'Worin ist dieses Profil gut?',
   auto: 'Auto',
   notify: {
+    gaveUpBody: 'Hermes konnte diese Aufgabe nicht abschließen. Öffne Kanban, um zu sehen warum, und vergib sie neu.',
     completedTitle: 'Task abgeschlossen',
     blockedTitle: 'Task blockiert, braucht deine Eingabe',
     blockLoopTitle: 'Task an Triage weitergeleitet, braucht eine Entscheidung',
@@ -1293,6 +1308,7 @@ const de: KanbanMessages = {
 
 /** Registered via `ctx.i18n.register` at plugin load (disposer tracked). */
 const ru: KanbanMessages = {
+  switchBoard: 'Сменить доску',
   plugin: {
     name: 'Канбан',
     description:
@@ -1498,6 +1514,7 @@ const ru: KanbanMessages = {
   profileGoodAt: 'В чём хорош этот профиль?',
   auto: 'Авто',
   notify: {
+    gaveUpBody: 'Hermes не смог завершить эту задачу. Откройте Kanban, чтобы увидеть причину и переназначить её.',
     completedTitle: 'Задача завершена',
     blockedTitle: 'Задача заблокирована — требуется ваше участие',
     blockLoopTitle: 'Задача направлена в сортировку — требуется решение',
@@ -1510,6 +1527,7 @@ const ru: KanbanMessages = {
 }
 
 const ar: KanbanMessages = {
+  switchBoard: 'تبديل اللوحة',
   plugin: {
     name: 'كانبان',
     description:
@@ -1715,6 +1733,7 @@ const ar: KanbanMessages = {
   profileGoodAt: 'ما الذي يجيده هذا الملف التعريفي؟',
   auto: 'تلقائي',
   notify: {
+    gaveUpBody: 'تعذّر على Hermes إنهاء هذه المهمة. افتح Kanban لمعرفة السبب وإعادة إسنادها.',
     completedTitle: 'اكتملت المهمة',
     blockedTitle: 'المهمة محظورة — تحتاج مدخلاتك',
     blockLoopTitle: 'أُحيلت المهمة إلى الفرز — تحتاج قرارًا',

@@ -7,6 +7,50 @@ Hermes-Updates; welcher es ist, steht beim jeweiligen Eintrag.
 Die Statuszeile der App zeigt `v0.21.2`: das ist die Version des
 Hermes-**Agenten**, nicht die der Desktop-App. Zwei Zahlen, zwei Dinge.
 
+## 1.2.0 - 2026-09-20
+
+Bezugsstand: **Hermes Desktop 0.17.6** (vorher 0.17.2).
+
+Das Update am 20.09. um 15:15 hat `de.ts` wieder entfernt. Das Nachziehen lief
+diesmal **nicht** durch das Werkzeug, weil zwei Dinge im Weg standen:
+
+**Der Patch zeigte auf einen Ordner, den es nicht mehr gibt.** In 0.17.6 heißt
+`apps/desktop/src/app/skills/` jetzt `apps/desktop/src/app/capabilities/plugins/`.
+`git apply --3way` bricht dann mit „does not exist in index" ab und verwirft
+alles, auch die Teile, die sauber gepasst hätten. Der Patch in diesem Repo ist
+auf den neuen Pfad umgeschrieben und aus dem Stand 0.17.6 frisch erzeugt.
+
+**Ein Konflikt blieb übrig:** `app/contrib/controller.tsx`. 0.17.6 bringt dort
+das Icon `Users` neu, unser Patch macht aus `NEW_SESSION_TITLE` die Funktion
+`newSessionTitle()`. Beides wird gebraucht, die Auflösung nimmt beide Seiten.
+
+**Und die Meldestelle war unvollständig.** Der Merksatz „der Compiler nennt
+jeden fehlenden Schlüssel" stimmt nur bis zum vierten: ab dem fünften schreibt
+`tsc` „and N more" und nennt die Namen nicht mehr. `--noErrorTruncation` ändert
+daran nichts, das Flag verlängert nur Typnamen. Wer sich darauf verlässt, zieht
+zu wenige Schlüssel nach und merkt es nicht, weil der Build trotzdem läuft.
+Gemessen wurde deshalb **Baum gegen Baum**: beide Kataloge mit esbuild gebündelt
+und die Schlüsselpfade von `en` gegen `de`, `ru` und `ar` verglichen. Unterschied
+zur tsc-Liste: 232 statt 104 Einträge.
+
+Nachgezogen wurden:
+
+- **232 neue Texte** — 139 in `i18n/de.ts`, 29 je Sprachblock in
+  `plugins/hermes-bots/i18n.ts` (de, ru, ar), 2 je Block in `plugins/kanban/i18n.ts`
+- **6 entfallene Schlüssel entfernt**: `nav.skills` an zwei Stellen (heißt jetzt
+  `capabilities`), dazu `mcpSetup.decline`, `declined`, `unanswered`, `catalogSource`
+- **drei Typänderungen**: die `mcpSetup`-Titel sind jetzt Zeichenketten statt
+  Funktionen mit Servernamen; `connectors.keepWaiting/connectTitle/describe` und
+  `localModels.updateToast` gibt es nicht mehr
+
+Belegt: `npx vitest run src/i18n` 34 von 34 grün, `npm run pack` sauber durch,
+der deutsche Text liegt im gebauten Bundle.
+
+**Nicht von hier, aber im selben Baum:** `app/chat/sidebar/pinned-loop-control.tsx`
+importiert `./header-action-style`, eine Datei, die 0.17.6 nicht mitliefert. Sie
+stammt aus einem Commit, der sie selbst als unfertig bezeichnet. Das ist der
+einzige verbleibende `tsc`-Fehler und keine Sache der Lokalisierung.
+
 ## 1.1.0 - 2026-09-13
 
 Ein Hermes-Update hat die deutsche Fassung wieder entfernt. Diese Fassung
