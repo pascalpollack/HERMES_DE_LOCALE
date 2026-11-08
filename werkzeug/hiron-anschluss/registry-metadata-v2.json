@@ -1,0 +1,247 @@
+{
+  "$schema": "hiron.model-registry.v2",
+  "models": [
+    {
+      "id": "hiron-qwen:7b-64k",
+      "display_name": "Qwen 7B (Local)",
+      "provider": "custom:ollama",
+      "deployment_type": "local",
+      "availability": "verified_local_ollama_run",
+      "tier": "LOCAL",
+      "cost_class": "local",
+      "provider_ready": true,
+      "readiness_expires_at": "2099-01-01T00:00:00+00:00",
+      "context_tokens": 65536,
+      "role_classes": [
+        "SCOUT_WORKER"
+      ],
+      "capabilities": [
+        "short_text",
+        "formatting",
+        "summarization",
+        "diagnosis",
+        "editorial",
+        "extraction",
+        "classification",
+        "bulk_processing"
+      ],
+      "tools": [],
+      "tool_use": false,
+      "structured_output": false,
+      "max_risk": 2,
+      "data_classes": [
+        "public",
+        "internal"
+      ],
+      "quota_remaining": 1,
+      "cost_upper_bound": 0,
+      "cost_currency": "EUR",
+      "license": "Apache-2.0",
+      "release_date": "2024-09-01",
+      "max_context_length": 65536
+    },
+    {
+      "id": "claude-opus-5-5",
+      "model_id": "claude-opus-5-5",
+      "display_name": "Claude Opus 5.5",
+      "provider": "anthropic",
+      "deployment_type": "cloud",
+      "tier": "CLOUD_PREMIUM",
+      "availability": "operational",
+      "provider_ready": true,
+      "readiness_expires_at": "2099-01-01T00:00:00+00:00",
+      "role_classes": [
+        "ORCHESTRATOR"
+      ],
+      "capabilities": [
+        "reasoning_highest",
+        "planning_highest",
+        "integration_highest",
+        "conflict_resolution",
+        "architecture",
+        "delegation",
+        "synthesis",
+        "multi_agent_orchestration",
+        "tool_use",
+        "coding_high"
+      ],
+      "tool_use": true,
+      "structured_output": true,
+      "context_tokens": 200000,
+      "cost_class": "high",
+      "cost_per_1m_tokens": {
+        "input": 15000,
+        "output": 45000
+      },
+      "cost_currency": "EUR",
+      "speed_class": "standard",
+      "latency_p95_ms": 2000,
+      "max_risk": 1,
+      "data_classes": [
+        "public",
+        "internal",
+        "confidential"
+      ],
+      "vision": false,
+      "code_execution": false,
+      "recommended_for": [
+        "complex_planning",
+        "multi_agent_orchestration",
+        "architecture_decisions",
+        "conflict_resolution",
+        "system_integration",
+        "final_synthesis"
+      ],
+      "avoid_for": [
+        "bulk_scanning",
+        "routine_classification",
+        "metadata_extraction",
+        "trivial_comparisons"
+      ],
+      "fallback_order": [
+        "claude-sonnet-5"
+      ],
+      "local_equivalent": null,
+      "health_status": "operational",
+      "license": "Proprietary (Anthropic)",
+      "release_date": "2026-05-15",
+      "max_context_length": 200000
+    },
+    {
+      "id": "claude-sonnet-5",
+      "model_id": "claude-sonnet-5",
+      "display_name": "Claude Sonnet 5",
+      "provider": "anthropic",
+      "deployment_type": "cloud",
+      "tier": "CLOUD_STANDARD",
+      "availability": "operational",
+      "provider_ready": true,
+      "readiness_expires_at": "2099-01-01T00:00:00+00:00",
+      "role_classes": [
+        "SPECIALIST"
+      ],
+      "capabilities": [
+        "reasoning_high",
+        "coding_high",
+        "analysis_high",
+        "security",
+        "code_review",
+        "debugging",
+        "research",
+        "synthesis",
+        "tool_use",
+        "extraction_medium"
+      ],
+      "tool_use": true,
+      "structured_output": true,
+      "context_tokens": 200000,
+      "cost_class": "medium",
+      "cost_per_1m_tokens": {
+        "input": 3000,
+        "output": 15000
+      },
+      "cost_currency": "EUR",
+      "speed_class": "fast",
+      "latency_p95_ms": 1200,
+      "max_risk": 1,
+      "data_classes": [
+        "public",
+        "internal",
+        "confidential"
+      ],
+      "vision": false,
+      "code_execution": false,
+      "recommended_for": [
+        "code_generation",
+        "code_review",
+        "domain_analysis",
+        "security_review",
+        "technical_research",
+        "subsystem_architecture",
+        "debugging"
+      ],
+      "avoid_for": [
+        "bulk_classification",
+        "metadata_extraction",
+        "routine_indexing"
+      ],
+      "fallback_order": [
+        "claude-haiku-4-5-20251001"
+      ],
+      "local_equivalent": "qwen-72k",
+      "health_status": "operational",
+      "license": "Proprietary (Anthropic)",
+      "release_date": "2025-10-01",
+      "max_context_length": 200000
+    },
+    {
+      "id": "claude-haiku-4-5-20251001",
+      "model_id": "claude-haiku-4-5-20251001",
+      "display_name": "Claude Haiku 4.5",
+      "provider": "anthropic",
+      "deployment_type": "cloud",
+      "tier": "CLOUD_ECONOMY",
+      "availability": "operational",
+      "provider_ready": true,
+      "readiness_expires_at": "2099-01-01T00:00:00+00:00",
+      "role_classes": [
+        "SCOUT_WORKER"
+      ],
+      "capabilities": [
+        "reasoning_medium",
+        "extraction_high",
+        "classification_high",
+        "search",
+        "indexing",
+        "mapping",
+        "bulk_processing",
+        "coding_medium",
+        "tool_use",
+        "vision"
+      ],
+      "tool_use": true,
+      "structured_output": true,
+      "context_tokens": 128000,
+      "cost_class": "low",
+      "cost_per_1m_tokens": {
+        "input": 80,
+        "output": 400
+      },
+      "cost_currency": "EUR",
+      "speed_class": "very_fast",
+      "latency_p95_ms": 600,
+      "max_risk": 2,
+      "data_classes": [
+        "public",
+        "internal"
+      ],
+      "vision": true,
+      "code_execution": false,
+      "recommended_for": [
+        "repository_scanning",
+        "file_indexing",
+        "information_extraction",
+        "classification",
+        "metadata_extraction",
+        "structure_mapping",
+        "bulk_processing",
+        "auxiliary_tasks",
+        "image_analysis"
+      ],
+      "avoid_for": [
+        "architectural_decisions",
+        "complex_reasoning",
+        "critical_security_review",
+        "final_synthesis"
+      ],
+      "fallback_order": [
+        "claude-sonnet-5"
+      ],
+      "local_equivalent": "qwen-32k",
+      "health_status": "operational",
+      "license": "Proprietary (Anthropic)",
+      "release_date": "2025-10-01",
+      "max_context_length": 128000
+    }
+  ]
+}

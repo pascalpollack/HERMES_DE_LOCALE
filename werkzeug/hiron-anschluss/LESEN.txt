@@ -18,11 +18,28 @@ Stoppen beendet nur die Pid, deren Kommando openai_anschluss.py enthält.
 Homes, Sitzungen und die JSONL-Sicherung bleiben.
 
 Ohne HIRON_MODEL_REGISTRY ist der Katalog leer und ein Chat endet mit
-registry_absent. Die Registraturdatei der Werkstatt liegt nicht in der
-übergebenen Quelle. Sie wird hier nicht erfunden. Ein Hermes-Chat trägt
-die Aufnahme-Fakten des Brokers nicht. Der Broker bleibt dann zu.
-Kontingent Verbrauch, Rest und Reset sind unknown. local_usage zählt
+registry_absent. Liegt die Metadaten-Datei
+registry-metadata-v2.json an HIRON_MODEL_REGISTRY, zeigt /v1/models die
+vier Kennungen. provider_ready, Ablauf, Kontingent und Kosten aus dieser
+Datei sind historische Angaben und werden vor dem Broker entfernt.
+Eine lebende Tatsache ist nur: die Programme ollama, llama-server,
+litellm und vllm stehen nicht im PATH, und 127.0.0.1:11434 nimmt keine
+Verbindung an, solange das so bleibt. Dann bleibt der Broker zu.
+Kontingent Verbrauch, Rest und Reset bleiben unknown. local_usage zählt
 nur dieses Programm.
+
+Menschlich zu entscheiden, hier nicht gesetzt: cloud_allowed,
+Datenklassen, Risikoobergrenze, Kostenobergrenze, Währung, ob eine
+lokale Runtime installiert werden darf, und eine Anbieter-Adresse.
+In den vier Zeilen gibt es kein base_url. Es wird keine erfunden.
+Die Registry-Stufen CLOUD_PREMIUM, CLOUD_STANDARD und CLOUD_ECONOMY
+sind keine Broker-Routen. Der Broker sucht LOCAL, FREE_CLOUD,
+CHEAP_CLOUD, STRONG_CODING, TOOL oder ESCALATE. Diese Stufen werden
+darum nicht ausgewählt. Der Dispatcher bleibt unbenutzt.
+
+Ein normaler Hermes-Chat trägt die Aufnahme-Fakten des Brokers nicht.
+Der Test schickt genau so einen Chat und erwartet die Absage. Eine
+eingespritzte Zulassung gilt nicht als Erfolg.
 
 Eine LOCAL-Route wird nur an HIRON_LOCAL_BACKEND_URL weitergereicht,
 und nur wenn der Host 127.0.0.1, localhost oder ::1 ist. Eine andere
@@ -39,8 +56,19 @@ Profil, das nicht das Produktionshome ist. Beispiel, nicht ausgeführt:
       transport: openai_chat
       discover_models: true
 
-model.default erst setzen, wenn /v1/models eine Kennung nennt, die
-schon in der echten Registratur steht.
+model.default jetzt nicht setzen. /v1/models nennt die Kennungen aus
+der Metadaten-Datei. Das ist keine Zulassung. Ein Chat bleibt beim
+Broker, solange die lebenden Fakten fehlen.
+
+Gateway und Desktop-HTTP sind zwei Dienste. Für das Home
+~/.hermes/default ist ein Gateway als PID 9258 gemeldet, lauschend auf
+38471. Das ist nicht als HTTP-Server des Desktops 0.17.6 und nicht als
+/api/status mit Version belegt. Desktop 0.17.6 hängt sich an
+hermes serve über HERMES_DESKTOP_REMOTE_URL. Solange das Gateway die
+Sperre gateway.lock hält, darf kein zweiter Serve dieselbe state.db
+öffnen. Den Gateway-Dienst anzuhalten oder auf einen Desktop-HTTP
+umzustellen ändert einen laufenden Dienst und braucht eine eigene
+Freigabe. Das ist hier nicht geschehen.
 
 Zurück: stoppen.sh, dann das State-Verzeichnis dieses Anschlusses
 löschen. Die Hermes-Konfiguration, falls sie später ergänzt wurde,

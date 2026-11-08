@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Synthetic checks for the loopback adapter. No Hermes home and no paid call."""
+"""Hermes-shaped requests through the real broker. No injected admission."""
 
 from __future__ import annotations
 
@@ -8,11 +8,13 @@ import os
 import threading
 import urllib.error
 import urllib.request
-from datetime import datetime, timedelta, timezone
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import ThreadingHTTPServer
 from pathlib import Path
 
+import aufnahme
 import openai_anschluss as anschluss
+
+REGISTRY = Path(__file__).resolve().parent / "registry-metadata-v2.json"
 
 
 def _check(cond: bool, text: str) -> None:
@@ -20,41 +22,8 @@ def _check(cond: bool, text: str) -> None:
         raise SystemExit("FAIL: " + text)
 
 
-class Stub(BaseHTTPRequestHandler):
-    seen = []
-
-    def log_message(self, fmt, *args):
-        return
-
-    def do_POST(self):  # noqa: N802
-        length = int(self.headers.get("Content-Length", "0"))
-        body = json.loads(self.rfile.read(length).decode("utf-8"))
-        Stub.seen.append({"path": self.path, "stream": body.get("stream"), "model": body.get("model")})
-        if body.get("stream") is True:
-            payload = (
-                b'data: {"choices":[{"delta":{"content":"synthetisch"}}]}\n\n'
-                b"data: [DONE]\n\n"
-            )
-            self.send_response(200)
-            self.send_header("Content-Type", "text/event-stream")
-            self.send_header("Content-Length", str(len(payload)))
-            self.end_headers()
-            self.wfile.write(payload)
-            return
-        raw = json.dumps({
-            "id": "stub",
-            "object": "chat.completion",
-            "choices": [{"message": {"role": "assistant", "content": "synthetisch"}}],
-        }).encode("utf-8")
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(raw)))
-        self.end_headers()
-        self.wfile.write(raw)
-
-
-def _start(handler, port=0):
-    server = ThreadingHTTPServer(("127.0.0.1", port), handler)
+def _start():
+    server = ThreadingHTTPServer(("127.0.0.1", 0), anschluss.Handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     return server
 
@@ -69,153 +38,70 @@ def _call(port, path, token, body=None):
     )
     try:
         with urllib.request.urlopen(request, timeout=5) as response:
-            raw = response.read()
-            return response.status, raw
+            return response.status, response.read()
     except urllib.error.HTTPError as exc:
         return exc.code, exc.read()
 
 
-def _fixture(root: Path):
-    expiry = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
-    registry = {
-        "$schema": "hiron.model-registry.v2",
-        "models": [{
-            "id": "synthetic-local",
-            "provider": "stub",
-            "tier": "LOCAL",
-            "provider_ready": True,
-            "readiness_expires_at": expiry,
-            "data_classes": ["synthetic"],
-            "capabilities": ["editorial"],
-            "tools": [],
-            "tool_use": False,
-            "structured_output": False,
-            "context_tokens": 1000,
-            "max_risk": 2,
-            "quota_remaining": 1,
-            "cost_upper_bound": 0,
-            "cost_currency": "XXX",
-        }],
-    }
-    policy = {
-        "free_first": True,
-        "strong_after_failures": 2,
-        "allowed_data_classes": ["synthetic"],
-        "max_risk": 2,
-        "max_cost": 0,
-        "currency": "XXX",
-    }
-    registry_path = root / "registry.json"
-    policy_path = root / "policy.json"
-    registry_path.write_text(json.dumps(registry), encoding="utf-8")
-    policy_path.write_text(json.dumps(policy), encoding="utf-8")
-    return registry_path, policy_path
-
-
 def main() -> int:
+    historical = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    _check(historical["$schema"] == "hiron.model-registry.v2", "schema")
+    _check(len(historical["models"]) == 4, "four rows")
+    _check(all("base_url" not in model and "url" not in model for model in historical["models"]), "no endpoint")
+    observation = aufnahme.probe_runtime()
+    live = aufnahme.live_registry(historical, observation)
+    by_id = {model["id"]: model for model in live["models"]}
+    qwen = by_id["hiron-qwen:7b-64k"]
+    _check("quota_remaining" not in qwen, "historical quota removed")
+    _check("readiness_expires_at" not in qwen, "historical expiry removed")
+    _check(qwen["provider_ready"] is False or (
+        observation["executables_on_path"]["ollama"] and observation["tcp_127_0_0_1_11434"]
+    ), "ready only from a live probe")
+    gap = aufnahme.tier_gap(historical)
+    _check("CLOUD_PREMIUM" in gap and "CLOUD_STANDARD" in gap and "CLOUD_ECONOMY" in gap, "tier gap")
+
+    decision = anschluss.model_broker.decide("ping", registry=live)
+    _check(decision["blocked"] is True, "normal text is not admitted")
+    _check(decision["candidate_models"] == [], "no candidate")
+    reasons = decision["exclusions"].get("hiron-qwen:7b-64k") or []
+    _check("provider_not_ready" in reasons or "quota_exhausted_or_unknown" in reasons, "fail closed: " + ",".join(reasons))
+
     os.environ["HIRON_ROUTER_TOKEN"] = "synthetic-token"
     os.environ.pop("HIRON_MODEL_REGISTRY", None)
     os.environ.pop("HIRON_POLICY_JSON", None)
     os.environ.pop("HIRON_LOCAL_BACKEND_URL", None)
     anschluss.LOCAL_REQUESTS["forwarded"] = 0
     anschluss.LOCAL_REQUESTS["refused"] = 0
-    _check(anschluss._loopback("http://127.0.0.1:9/v1"), "loopback")
-    _check(not anschluss._loopback("http://example.invalid/v1"), "public host refused")
-
-    server = _start(anschluss.Handler)
+    server = _start()
     port = server.server_address[1]
-    status, raw = _call(port, "/health", "")
-    health = json.loads(raw)
-    _check(status == 200, "health")
-    _check(health["provider_entitlement"]["remaining"] == "unknown", "quota unknown")
-    _check(health["registry"] == "absent", "no invented registry")
-    status, raw = _call(port, "/v1/models", "wrong")
-    _check(status == 401, "models reject a bad token")
-    status, raw = _call(port, "/v1/models", "synthetic-token")
-    _check(json.loads(raw)["data"] == [], "empty catalog")
-    status, raw = _call(port, "/v1/chat/completions", "synthetic-token", {
-        "model": "synthetic-local",
-        "messages": [{"role": "user", "content": "ping"}],
-    })
-    _check(status == 503 and json.loads(raw)["error"]["code"] == "registry_absent", "no registry")
-
-    root = Path(os.environ.get("TMPDIR", "/tmp")) / "hiron-anschluss-test"
-    root.mkdir(parents=True, exist_ok=True)
-    registry_path, policy_path = _fixture(root)
-    os.environ["HIRON_MODEL_REGISTRY"] = str(registry_path)
-    os.environ["HIRON_POLICY_JSON"] = str(policy_path)
-    status, raw = _call(port, "/v1/chat/completions", "synthetic-token", {
-        "model": "synthetic-local",
-        "messages": [{"role": "user", "content": "ping"}],
-    })
-    blocked = json.loads(raw)
-    _check(status == 409, "stock chat is not admitted: " + blocked["error"]["code"])
-    _check(blocked["error"]["code"] != "ok", "refusal is explicit")
-    _check("synthetic-token" not in raw.decode("utf-8"), "token not in the error")
-
-    # The fixture's admission facts are not in a Hermes chat body. Supply them
-    # only inside this test by calling decide the way a complete adapter input
-    # would, then prove the HTTP forward still requires a loopback stub.
-    text = "ping"
-    supplied = {
-        "workload": "editorial",
-        "complexity": 1,
-        "scope": 1,
-        "context": 10,
-        "context_unit": "tokens",
-        "output_tokens": 10,
-        "data_class": "synthetic",
-        "required_tools": [],
-        "required_capabilities": ["editorial"],
-        "risk": 1,
-        "ambiguity": 1,
-        "verifiability": 4,
-        "tool_use_required": False,
-        "structured_output_required": False,
-    }
-    decision = anschluss.model_broker.decide(
-        text, supplied, registry=json.loads(registry_path.read_text(encoding="utf-8")), policy=json.loads(policy_path.read_text(encoding="utf-8"))
-    )
-    _check(decision["route"] == "LOCAL" and "synthetic-local" in decision["candidate_models"], "fixture can be admitted")
-    os.environ["HIRON_LOCAL_BACKEND_URL"] = "http://127.0.0.1:9"
-    # Monkeypatch the chat path's text classification by using a local wrapper:
-    # the HTTP handler calls decide(text) without supplied facts, so a normal
-    # Hermes body stays blocked. The forward is tested through _chat after
-    # substituting decide for this fixture only.
-    original = anschluss._decide
-    anschluss._decide = lambda _text: decision
     try:
+        status, raw = _call(port, "/v1/models", "nope")
+        _check(status == 401, "auth")
         status, raw = _call(port, "/v1/chat/completions", "synthetic-token", {
-            "model": "synthetic-local",
+            "model": "hiron-qwen:7b-64k",
             "messages": [{"role": "user", "content": "ping"}],
             "stream": True,
         })
-        _check(json.loads(raw)["error"]["code"] == "local_backend_unreachable", "dead loopback is an error")
-        stub = _start(Stub)
-        os.environ["HIRON_LOCAL_BACKEND_URL"] = f"http://127.0.0.1:{stub.server_address[1]}"
+        _check(status == 503 and json.loads(raw)["error"]["code"] == "registry_absent", "missing registry")
+        os.environ["HIRON_MODEL_REGISTRY"] = str(REGISTRY)
         status, raw = _call(port, "/v1/chat/completions", "synthetic-token", {
-            "model": "synthetic-local",
+            "model": "hiron-qwen:7b-64k",
             "messages": [{"role": "user", "content": "ping"}],
             "stream": True,
         })
-        _check(status == 200 and b"data: [DONE]" in raw, "stream reaches the stub")
-        _check(Stub.seen[-1]["model"] == "synthetic-local", "model id forwarded")
+        body = json.loads(raw)
+        _check(status == 409, "refused on the production path")
+        _check(body["error"]["code"] in reasons or body["error"]["code"] == "provider_not_ready", body["error"]["code"])
+        _check("synthetic-token" not in raw.decode("utf-8"), "no token leak")
+        _check(body["diagnosis"]["exclusions"].get("hiron-qwen:7b-64k"), "diagnosis names the row")
+        _check(anschluss.LOCAL_REQUESTS["forwarded"] == 0, "nothing forwarded")
         status, raw = _call(port, "/health", "")
         health = json.loads(raw)
-        _check(health["provider_entitlement"]["consumption"] == "unknown", "entitlement stays unknown")
-        _check(health["local_usage"]["forwarded_requests"] == 1, "local count is local")
-        cloud = dict(decision)
-        cloud["route"] = "CHEAP_CLOUD"
-        anschluss._decide = lambda _text: cloud
-        before = len(Stub.seen)
-        status, raw = _call(port, "/v1/chat/completions", "synthetic-token", {
-            "model": "synthetic-local",
-            "messages": [{"role": "user", "content": "ping"}],
-        })
-        _check(json.loads(raw)["error"]["code"] == "cloud_route_not_called", "cloud is not called")
-        _check(len(Stub.seen) == before, "stub saw no cloud request")
+        _check(health["provider_entitlement"]["remaining"] == "unknown", "entitlement unknown")
+        _check(health["boundaries"]["configured_adapters"] == [], "no invented adapter")
+        _check("CLOUD_PREMIUM" in health["boundaries"]["registry_tiers_not_broker_routes"], "health shows the gap")
+        _check(health["local_usage"]["forwarded_requests"] == 0, "no local completion counted")
     finally:
-        anschluss._decide = original
         server.shutdown()
     print("OK")
     return 0

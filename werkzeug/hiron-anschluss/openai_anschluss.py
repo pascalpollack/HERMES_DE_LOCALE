@@ -31,6 +31,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import model_broker  # noqa: E402  the unchanged workshop broker
+import aufnahme  # noqa: E402
 
 
 LOCAL_REQUESTS = {"forwarded": 0, "refused": 0}
@@ -82,7 +83,8 @@ def _decide(text: str) -> dict:
     registry = _registry()
     if registry is None:
         return {"blocked": True, "route": None, "reason": "registry_absent", "candidate_models": []}
-    return model_broker.decide(text, registry=registry, policy=_policy())
+    # Historical readiness and quota never reach the broker.
+    return model_broker.decide(text, registry=aufnahme.live_registry(registry), policy=_policy())
 
 
 def _error(code: str, message: str, status: int) -> tuple[int, dict]:
@@ -122,6 +124,7 @@ def _health() -> dict:
             "note": "counts this process only; not a provider balance",
         },
         "dispatcher": "not_used",
+        "boundaries": aufnahme.boundaries(registry, aufnahme.probe_runtime()),
     }
 
 
@@ -155,6 +158,12 @@ def _chat(body: dict) -> tuple[int, dict | bytes, str]:
             reasons.extend(values)
         code = reasons[0] if reasons else str(decision.get("reason") or "blocked")
         status, payload = _refuse(code, "Der Broker lässt diesen Aufruf nicht zu: " + code)
+        payload["diagnosis"] = {
+            "broker_route": decision.get("route"),
+            "broker_reason": decision.get("reason"),
+            "exclusions": decision.get("exclusions") or {},
+            "historical_fields_ignored": list(aufnahme.HISTORICAL_NOT_LIVE),
+        }
         return status, payload, "json"
     if decision.get("route") != "LOCAL":
         status, payload = _refuse(

@@ -8,6 +8,13 @@ Die Statuszeile der App am Bezugsstand 0.17.6 zeigt `v0.17.6`. Die Version
 des mitgelieferten Agentenquellbaums ist `0.21.3`. Das ist nicht die CLI
 `0.22.7`. Zwei Zahlen, zwei Dinge.
 
+## 1.3.6 - 2026-11-08
+
+Der Anschluss wertet historische Bereitschaft und Kontingente aus der
+Registry nicht als Zulassung. Vor `decide` bleiben nur lebende lokale
+Beobachtungen. Ein normaler Chat läuft denselben Broker-Weg und wird
+abgewiesen. Es wird kein Modell aufgerufen.
+
 ## 1.3.5 - 2026-11-08
 
 Loopback-Anschluss `werkzeug/hiron-anschluss/` für den OpenAI-Chat-Vertrag
