@@ -8,6 +8,21 @@ Die Statuszeile der App am Bezugsstand 0.17.6 zeigt `v0.17.6`. Die Version
 des mitgelieferten Agentenquellbaums ist `0.21.3`. Das ist nicht die CLI
 `0.22.7`. Zwei Zahlen, zwei Dinge.
 
+## 1.3.3 - 2026-11-08
+
+Benutzerinstallation ohne root: `werkzeug/hermes-desktop-installieren.sh`
+legt die AppImage, den Starter und `hermes-desktop.desktop` mit dem Namen
+**Hermes Desktop** unter `XDG_DATA_HOME` ab. `PATH` und `~/.hermes` bleiben
+unberührt. Der Starter benutzt den venv-Interpreter aus `facts.json`,
+`HERMES_DISABLE_LAZY_INSTALLS=1`, `--port 0`, `--skip-build`, `--isolated`,
+ein Token nur in der Prozessumgebung, und `--no-sandbox` nicht.
+`werkzeug/hermes-desktop-launcher.test.sh` ist grün.
+
+`setup.status` und `setup.runtime_check` antworten auf 0.22.7. Ein leeres
+Home liefert `provider_configured: false` und `ok: false`. Das ist die
+Anbieter-Einrichtung, kein hängender Vertrag. `free_tier` heißt dort
+`free_tier_route`; die Entscheidung bleibt `ok`.
+
 ## 1.3.2 - 2026-11-08
 
 Kein neues Paket. Der PATH-Launcher `hermes --version` mit leerem

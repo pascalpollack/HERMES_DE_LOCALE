@@ -279,6 +279,30 @@ Produktions-Home ist allein das gesetzte `HERMES_HOME`.
 und `installs/<key>/bootstrap/` an. Das Produktions-Home wird dafür nicht
 gebraucht. Kein `config.yaml` und kein `state.db` in dieser Kurzprobe.
 
+## Bereitschaft
+
+Desktop 0.17.6 fragt den Backend-Gateway nach `setup.status` und
+`setup.runtime_check` (`src/lib/runtime-readiness.ts`). Beide Methoden gibt
+es in CLI 0.22.7 (`tui_gateway/methods_config.py`). Auf einem leeren Home,
+ohne Anmeldung, antwortet 0.22.7 in diesem Checkout in unter einer Sekunde:
+
+- `setup.status`: `provider_configured: false`
+- `setup.runtime_check`: `ok: false` und der Satz, dass kein Anbieter
+  verbunden ist
+
+`interpretRuntimeReadiness` liest `ok`. `false` ist `needs_setup`, also die
+deutsche Anbieter-Einrichtung, nicht ein hängender Vertrag. Ein frisches
+Profil hat keine alte Historie und keinen Anbieter. Das ist der fertige
+Zustand, bis jemand selbst einen Anbieter einträgt. Login, Portal und
+Inferenz werden dafür nicht aufgerufen.
+
+Ein Feld hat sich umbenannt: 0.17.6 liest `setup.runtime_check.free_tier`,
+0.22.7 schreibt im Erfolgsfall `free_tier_route`. Fehlt der Boolesche Wert,
+bleibt er für den Client unbekannt. `ok` entscheidet trotzdem. Unter einem
+lebenden `hermes serve` kann die erste `setup.status` bis etwa 12 Sekunden
+auf den Boot-Datensatz warten und einmal `readiness check still in progress`
+antworten. Der Client fragt danach erneut. Das ist keine andere Schnittstelle.
+
 ## Anbindung an CLI 0.22.7 ohne Autostart
 
 Gemessen am 08.11.2026 nur in frischen Verzeichnissen unter `/tmp/synth-0227`.
@@ -360,6 +384,47 @@ Ein Desktop-Neubau passend zu 0.22.7 ist nicht erfolgt. Er brauchte Node
 `>=26` und Electron 44.9.3, und der vorhandene Patch passt nicht. Solange
 der Probe-Lauf über den Serve-Endpunkt das Fenster zeigt, bleibt v1 das
 Paket.
+
+## Dauerhafte Installation
+
+Kein root, kein `--no-sandbox`, kein Eintrag in `PATH`, kein Schreibzugriff
+auf `~/.hermes`. Die AppImage wird nach
+`$XDG_DATA_HOME/hermes-desktop/` kopiert (Voreinstellung
+`~/.local/share/hermes-desktop/`). Der Starter heißt **Hermes Desktop** und
+liegt unter `$XDG_DATA_HOME/applications/hermes-desktop.desktop`. Ein
+vorhandener Terminal-Starter bleibt liegen.
+
+```bash
+werkzeug/hermes-desktop-installieren.sh /pfad/zu/Hermes-0.17.6-linux-x86_64.AppImage
+```
+
+Danach steht Hermes Desktop im Anwendungsmenü. Der Starter
+`werkzeug/hermes-desktop-starten.sh` (installiert als `bin/hermes-desktop`):
+
+- liest den Interpreter nur aus `facts.json` (`packages.venv.environment`)
+- startet `python -B -m hermes_cli.main serve --host 127.0.0.1 --port 0 --skip-build --isolated`
+- setzt `HERMES_DISABLE_LAZY_INSTALLS=1`
+- legt Backend-Home und Desktop-Home frisch unter dem Installationsverzeichnis an, mit `LESE-MICH.txt`
+- erzeugt ein Sitzungs-Token pro Lauf, nur in der Prozessumgebung, nicht in den Logs
+- wartet auf `HERMES_BACKEND_READY`, dann startet die AppImage ohne `--no-sandbox`
+- hält eine Sperre; ein zweiter Klick versucht nur, das Fenster zu fokussieren
+- beendet beim Schließen nur das Backend, dessen `HERMES_HOME` dieses Backend-Home ist
+- bricht sichtbar ab, wenn `unshare --user` fehlschlägt, und nennt `logs/launcher.log`
+
+Nicht unterstützt: `hermes` auf `PATH` mit fremdem `HERMES_HOME`,
+`hermes pm repair`, `hermes update` aus dieser App, `--no-sandbox`,
+`--print-runtime-command` als Laufzeit des leeren Homes, ein Start ohne
+User-Namespaces, und die Annahme, das frische Home enthalte die alten
+Sitzungen.
+
+Prüfung: `werkzeug/hermes-desktop-launcher.test.sh`.
+
+| Datei | SHA-256 |
+|---|---|
+| `werkzeug/hermes-desktop-starten.sh` | `baa51d8f1f73b9dd44818c031ac0dd4e6b8f8bd9ec9606c9ec4fdacdb70753c6` |
+| `werkzeug/hermes-desktop-installieren.sh` | `620963578aa9bb4db2d0e16eafff754bbe27e33903d69faba09b905e533782b0` |
+| `werkzeug/hermes-desktop-launcher.test.sh` | `8dd5beb3b512be5c3e11badf23712aed4d5d2e7fc542a9d0a27521bbe5f91ece` |
+| `installer/hermes-desktop-icon.png` | `277c2ed7bed8d9a3c3a09280dfbafaf6546c23a41443491637abe12259684394` |
 
 ## Erster Start auf dem Debian-Rechner
 
