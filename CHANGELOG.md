@@ -8,6 +8,21 @@ Die Statuszeile der App am Bezugsstand 0.17.6 zeigt `v0.17.6`. Die Version
 des mitgelieferten Agentenquellbaums ist `0.21.3`. Das ist nicht die CLI
 `0.22.7`. Zwei Zahlen, zwei Dinge.
 
+## 1.3.2 - 2026-11-08
+
+Kein neues Paket. Der PATH-Launcher `hermes --version` mit leerem
+`HERMES_HOME` endet auf einer Store-Python-Installation mit Exit 1, weil die
+Abhängigkeitengeneration unter `<HERMES_HOME>/installs/<install_key>/` liegt
+und `--version` den Borrow-Sync überspringt. `hermes pm repair` wird dafür
+nicht gebraucht und nicht ausgeführt.
+
+`werkzeug/linux_cli_probe_serve.sh` liest nur `packages.venv.environment` aus
+`facts.json` und startet diesen Interpreter als `python -B -m hermes_cli.main
+serve --skip-build --isolated`, mit leerem Probe-Home und
+`HERMES_DISABLE_LAZY_INSTALLS=1`. Kein fest eingetragener Installations-Hash.
+Gegen Commit `b200f5bc60e3` hier: `--version` und `serve --help` Exit 0.
+Der laufende PC-Probe wird davon nicht neu gestartet.
+
 ## 1.3.1 - 2026-11-08
 
 Keine neuen Pakete und keine neuen Übersetzungstexte. v1 bleibt Desktop 0.17.6.

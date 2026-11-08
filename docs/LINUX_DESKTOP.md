@@ -231,6 +231,54 @@ warnt dann und nimmt `journal_mode=DELETE` statt WAL. Das betrifft den
 Python-Interpreter, den das Backend wirklich benutzt, nicht das
 Electron-Binary.
 
+## Leeres Home und die schon installierte Laufzeit
+
+`hermes` auf `PATH` ist der Store-Interpreter. Die Abhängigkeitengeneration
+steht in `<HERMES_HOME>/installs/<install_key>/facts.json`
+(`pm.environments.dependency_home_root`, Schlüssel = die ersten 16 Hexzeichen
+von SHA-256 des aufgelösten Checkout-Pfads). Ein leeres `HERMES_HOME` hat
+diesen Datensatz nicht. `hermes --version` ist zusätzlich ein Metadaten-Flag
+(`hermes_cli.venv_sync._METADATA_FLAGS`) und überspringt den Borrow-Sync.
+Der Store-Interpreter hat selbst keine Pakete und endet mit Exit 1:
+
+`hermes: no dependency environment is committed for this install; run hermes pm repair`
+
+Das ist kein allgemeiner Defekt der CLI und kein Grund für `hermes pm repair`
+am Produktions-Home.
+
+Der öffentliche Einstieg, der die schon gebaute Generation behält, ist deren
+eigener Interpreter:
+
+`"<facts packages.venv.environment>/bin/python" -B -m hermes_cli.main`
+
+`hermes_cli.main:main` ist der Konsolenskript-Einstieg, und `main.py` ist als
+Modul startbar. Ein venv-Interpreter (`sys.prefix != sys.base_prefix`) behält
+die Pakete, mit denen er gebaut wurde
+(`pm.environments._require_own_dependencies`). `HERMES_HOME` bleibt dabei nur
+das Datenverzeichnis. `HERMES_DISABLE_LAZY_INSTALLS=1` ist der dokumentierte
+Schalter für Proben, der Nachinstallationen ablehnt
+(`website/docs/reference/environment-variables.md`). Er wird nicht in `.env`
+geschrieben.
+
+`--print-runtime-command` liefert den Store-Interpreter und damit genau den
+Einstieg, der am leeren Home scheitert. Die Generation steht im Datensatz
+`facts.json`, nicht in diesem Kommando.
+
+Auf dem Rechner wurde genau das geprüft, ohne dieses Repo: `--version` und
+`serve --help` mit Exit 0, CLI 0.22.7, Commit `b200f5bc60e3`, Python 3.14.9,
+leere `HOME` / `HERMES_HOME` / XDG, Code und Laufzeit nur lesend. Die
+Fingerprint-Pfade dieser Installation gehören nicht ins Repo. Das Skript liest
+sie aus `facts.json`. Hier gegen denselben Commit, mit dem venv dieser
+Umgebung (Python 3.14.10, nicht die PC-Binary): dieselben beiden Aufrufe
+Exit 0. `serve --help` nennt `--skip-build` und `--isolated`. `--skip-build`
+überspringt den Web-UI-Build. `--isolated` startet bei einem benannten Profil
+einen eigenen Server; es verlegt `HERMES_HOME` nicht. Die Trennung vom
+Produktions-Home ist allein das gesetzte `HERMES_HOME`.
+
+`--version` über diesen Einstieg legt im **Probe**-Home dennoch Log, `SOUL.md`
+und `installs/<key>/bootstrap/` an. Das Produktions-Home wird dafür nicht
+gebraucht. Kein `config.yaml` und kein `state.db` in dieser Kurzprobe.
+
 ## Anbindung an CLI 0.22.7 ohne Autostart
 
 Gemessen am 08.11.2026 nur in frischen Verzeichnissen unter `/tmp/synth-0227`.
@@ -319,8 +367,11 @@ Nur leere Probe-Verzeichnisse. Nicht `/home/pascal/.hermes`. Die Skripte
 brechen ab, wenn der Pfad dieses Home oder `$HOME/.hermes` ist. Sie ändern
 `PATH` nicht und installieren nichts.
 
-Zuerst die schon vorhandene CLI, mit eigenem leeren Home und einem
-selbst gewählten Token:
+Zuerst das Backend. Das Skript ruft nicht `hermes` auf `PATH` auf. Es liest
+nur `facts.json` im Install-Datenwurzel (Voreinstellung `$HOME/.hermes`) und
+startet den dort genannten venv-Interpreter. Checkout und Datenwurzel bleiben
+unbeschrieben, soweit der Prozess sie nicht selbst anfasst; der Integrator
+hat sie zusätzlich nur lesend gebunden.
 
 ```bash
 PROBE=/home/pascal/hermes-desktop-probe
