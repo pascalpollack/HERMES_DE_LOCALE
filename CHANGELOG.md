@@ -4,8 +4,30 @@ Alle nennenswerten Änderungen an diesem Paket. Die Versionsnummer beschreibt
 **dieses Paket**, nicht Hermes selbst. Der Bezugsstand wandert mit den
 Hermes-Updates; welcher es ist, steht beim jeweiligen Eintrag.
 
-Die Statuszeile der App zeigt `v0.21.2`: das ist die Version des
-Hermes-**Agenten**, nicht die der Desktop-App. Zwei Zahlen, zwei Dinge.
+Die Desktop-Version und die Agenten-Version sind zwei Zahlen. Übersetzt ist
+die Desktop-App.
+
+## 1.2.2 - 2026-11-08
+
+Die Weitergabe ist nur der Quellpatch. `README.md` beginnt mit
+`SOURCE-PATCH-NOT-BINARY-LANGUAGE-PACK`. Windows spielt denselben Patch
+über Git Bash ein, wahlweise über
+`installer/Deutsch_quellpatch_einspielen.bat`, das nur Bash startet.
+Die alten Ganz-App-Batches liegen unter `installer/legacy-ganze-app/` und
+sind nicht der Einbau. Es wird keine App gebaut und keine Prüfsumme umgangen.
+
+## 1.2.1 - 2026-11-08
+
+Weitergabe als Sprachpaket, ohne Programmpaket. `docs/SPRACHPAKET.md` sagt,
+wie der Patch auf Linux und Windows in einen Desktop-0.17.6-Quellbaum kommt
+und wie er zurückgenommen wird. `installer/Deutsch_installieren.sh` und
+`installer/Deutsch_zuruecknehmen.sh` tun nur das. Die vorhandenen
+`.bat`-Dateien bleiben der Weg für eine schon gebaute Windows-Fassung und
+brauchen weiter einen eigenen Ordner `paket`, der hier nicht liegt.
+
+`werkzeug/locale_pruefen.mjs` vergleicht die Schlüssel des Kernkatalogs und
+der Plugin-Bündel. Die README nannte noch Desktop 0.17.2. Der Patch ist der
+von 1.2.0 und gilt für 0.17.6.
 
 ## 1.2.0 - 2026-09-20
 

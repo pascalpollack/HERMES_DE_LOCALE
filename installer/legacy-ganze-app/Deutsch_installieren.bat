@@ -5,7 +5,9 @@ title Hermes Desktop - Deutsch installieren
 
 rem ---------------------------------------------------------------
 rem  Hermes Desktop: deutsche Oberflaeche einspielen.
-rem  Gebaut am 12.09.2026 fuer Hermes 0.17.2.
+rem  Quellpatch dieser Fassung: Hermes Desktop 0.17.6.
+rem  Die Batch ersetzt nur ein mitgeliefertes paket (Hermes.exe + resources).
+rem  Dieses Sprachpaket enthaelt kein paket und baut keins.
 rem
 rem  Spielt fertige Dateien ein. Auf dem Zielrechner werden WEDER
 rem  Node NOCH ein Quellbaum gebraucht.

@@ -1,0 +1,16 @@
+Diese zwei Batch-Dateien sind der alte Weg, eine schon gebaute
+Windows-App zu ersetzen. Sie gehören nicht zur Quellpatch-Weitergabe
+und liegen nicht im Quell-ZIP.
+
+Sie erwarten einen Ordner paket mit Hermes.exe und resources neben
+sich. Diesen Ordner gibt es hier nicht. Ohne ihn tun sie nichts
+Nützliches und sind kein Sprachpaket.
+
+Der Quellpatch für Windows steht eine Ebene höher und läuft über
+Git Bash:
+
+  bash installer/Deutsch_installieren.sh PFAD\zum\hermes-agent
+  bash installer/Deutsch_zuruecknehmen.sh PFAD\zum\hermes-agent
+
+oder über installer/Deutsch_quellpatch_einspielen.bat, das nur Git Bash
+für denselben Patch startet und keine Programmdatei kopiert.

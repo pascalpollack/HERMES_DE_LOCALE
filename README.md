@@ -1,23 +1,53 @@
+# SOURCE-PATCH-NOT-BINARY-LANGUAGE-PACK
+
+Dies ist ein Quellpatch für die deutsche Oberfläche von Hermes Desktop
+**0.17.6**, Commit `6159bf4d87a32de72869e0b479606ddd2b9977a1`. Es ist kein
+installierbares Sprachpaket für eine fertige Windows- oder Linux-App und
+enthält kein Programm.
+
+Linux und Windows, in Git Bash, am Checkout:
+
+```bash
+bash installer/Deutsch_installieren.sh /pfad/zum/hermes-agent
+bash installer/Deutsch_zuruecknehmen.sh /pfad/zum/hermes-agent
+```
+
+Windows, ohne geöffnete Bash. Die Batch startet nur Git Bash für denselben
+Patch und kopiert keine Programmdatei:
+
+```bat
+installer\Deutsch_quellpatch_einspielen.bat PFAD\zum\hermes-agent
+installer\Deutsch_quellpatch_zuruecknehmen.bat PFAD\zum\hermes-agent
+```
+
+Zum Einspielen reicht Git. Node und npm werden nicht aufgerufen. Wer den
+gepatchten Baum später selbst übersetzt, braucht die Spanne aus
+`package.json` dieses Commits: Node `^22.22.0 || ^24.11.0 || >=26`, npm
+`<11.10.0 || >=11.17.0`. Ob eine Programmdatei gebaut wird, entscheidet
+dieses Paket nicht, und es baut keine.
+
+`installer/legacy-ganze-app/` enthält die alten Batches, die eine ganze
+gebaute App ersetzen. Sie brauchen einen Ordner `paket`, den es hier nicht
+gibt. Sie sind nicht dieser Einbau und nicht im Quell-ZIP.
+
+Näheres: [docs/SPRACHPAKET.md](docs/SPRACHPAKET.md).
+
 # Hermes Desktop - deutsche Locale (`de`)
 
-**Version 1.1.0**, 13.09.2026.
+**Version 1.2.2**, 08.11.2026.
 
-Gebaut gegen **Hermes Desktop 0.17.2**, Commit `d595e636c8`.
-
-> Die Statuszeile der laufenden App zeigt eine **andere** Zahl, etwa
-> `v0.21.2 (+19) a84a222`. Das ist kein Widerspruch: `0.21.2` ist die Version
-> des Hermes-**Agenten** (`pyproject.toml`), `0.17.2` die der **Desktop-App**
-> (`apps/desktop/package.json`), und übersetzt ist die Desktop-App. Der
-> Commit-Kurzname in der Statuszeile ist der verlässliche Bezug - gegen ihn
-> passt der Patch.
+> Die Desktop-Version und die Agenten-Version sind zwei Zahlen. Übersetzt ist
+> die Desktop-App 0.17.6. Im selben Commit ist der Agent 0.21.3.
 
 Vollständige deutsche Übersetzung der Hermes-Desktop-Oberfläche - auf allen
 fünf Ebenen, auf denen Text in dieser Anwendung liegt: Kernkatalog,
 Plugin-Sprachpakete, Startbildschirm, Tab-Beschriftungen und Plugin-Stammdaten.
 Was sich wann geändert hat, steht in [CHANGELOG.md](CHANGELOG.md).
 
-**Vollständig heißt hier vollständig: 3773 von 3773 Schlüsselpfaden.** Die
-Datei ist als `Translations` typisiert, und dieser Typ verlangt jeden Schlüssel.
+**Vollständig heißt hier vollständig gegen `en.ts`.** `de.ts` ist als
+`Translations` typisiert, und dieser Typ verlangt jeden Schlüssel. Der
+statische Vergleich der Blätter ergibt 3961 von 3961. Die ältere Zahl 3773
+gehört zum Katalog von Desktop 0.17.2.
 Ein fehlender wäre ein Übersetzungsfehler beim Bauen, kein stiller Rückfall auf
 Englisch. `defineLocale()` für Teilfassungen wird bewusst **nicht** benutzt.
 
@@ -71,20 +101,15 @@ zurück; `context.test.tsx` nutzte `'de'` als Beispiel für eine unbekannte
 Sprache. Beide mussten mit. Das zweite steht jetzt auf `'xx'`, damit der Test
 weiter misst, was er messen soll.
 
-## Der Installer ohne Toolchain
+## Kein Installer für eine fertige App
 
-`installer/Deutsch_installieren.bat` spielt fertig gebaute Dateien auf einem
-Windows-Rechner ein, auf dem nur die App liegt: kein Node, kein Quellbaum. Er
-braucht einen Ordner `paket` neben sich mit `Hermes.exe`, `resources\` und
-`VERSION.txt` aus einem Build (`apps/desktop/release/win-unpacked`).
-
-**Es reicht nicht, `app.asar` zu tauschen.** Gemessen über Hashlisten vor und
-nach einem Neubau: 218 von 484 Dateien ändern sich, darunter `Hermes.exe`
-selbst, weil electron-builder die asar-Integritätsprüfung in die Programmdatei
-stempelt. Ein reiner asar-Tausch lässt die App an ihrer eigenen Prüfung
-scheitern. Der Batch spielt darum `Hermes.exe` und den ganzen `resources`-Ordner
-ein, legt vorher eine Sicherung an und hat mit
-`Deutsch_zuruecknehmen.bat` einen geprobten Rückweg.
+Die Weitergabe ist der Quellpatch oben. Die alten Dateien
+`installer/legacy-ganze-app/Deutsch_installieren.bat` und
+`Deutsch_zuruecknehmen.bat` ersetzen eine schon gebaute Windows-App und
+brauchen einen Ordner `paket` mit `Hermes.exe` und `resources`. Den gibt
+diese Weitergabe nicht her. Sie umgehen auch keine Prüfsumme: ein Tausch
+nur von `app.asar` scheitert an der Prüfsumme in `Hermes.exe`, und genau
+darum ist das kein Sprachpaket, das man in eine Installation legt.
 
 ## Nach einem Hermes-Update
 
