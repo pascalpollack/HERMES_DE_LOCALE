@@ -4,8 +4,38 @@ Alle nennenswerten Änderungen an diesem Paket. Die Versionsnummer beschreibt
 **dieses Paket**, nicht Hermes selbst. Der Bezugsstand wandert mit den
 Hermes-Updates; welcher es ist, steht beim jeweiligen Eintrag.
 
-Die Statuszeile der App zeigt `v0.21.2`: das ist die Version des
-Hermes-**Agenten**, nicht die der Desktop-App. Zwei Zahlen, zwei Dinge.
+Die Statuszeile der App am Bezugsstand 0.17.6 zeigt `v0.17.6`. Die Version
+des mitgelieferten Agentenquellbaums ist `0.21.3`. Das ist nicht die CLI
+`0.22.7`. Zwei Zahlen, zwei Dinge.
+
+## 1.3.0 - 2026-11-08
+
+Keine neuen Übersetzungstexte. Der vorhandene Patch von 1.2.0 wurde gegen
+Upstream geprüft und ein Linux-Paket der echten Desktop-App gebaut.
+
+Bezugsstand, an dem `git apply` ohne Konflikt sitzt und an dem gebaut wurde:
+**Hermes Desktop 0.17.6**, Commit
+`6159bf4d87a32de72869e0b479606ddd2b9977a1` (2026-09-20, „runner: drop the
+RLIMIT_DATA worker cap“). Electron 40.10.2, electron-builder 26.15.3. Der
+Agent in demselben Commit ist **0.21.3** (Statusschema 30, Config-Schema 45).
+
+Geprüft, nicht angenommen:
+
+- `d595e636c8` ist Desktop **0.17.2**. Die Datei
+  `apps/desktop/src/app/capabilities/plugins/plugins-tab.tsx` gibt es dort
+  nicht (HTTP 404). Der aktuelle Patch zeigt auf diesen Pfad und gilt dort
+  nicht. Die README-Zeile aus Fassung 1.1.0 beschrieb den damaligen Stand.
+- Auf Upstream-`main` vom 08.11.2026 (`110afdd60e3098b86950963b06a792e261bd36a4`,
+  Desktop-Versionsfeld `0.0.0`) schlägt `git apply --check` fehl.
+- Dieselbe Patch-Vorlage passt bytegenau auf 177 Commits am 20.09.2026, vom
+  ersten `5a0fb0f38d2c3d088b286563931ebd95632fc5f6` bis zum gebauten
+  `6159bf4d`. Gebaut wurde der letzte.
+
+`npx tsc --noEmit` fehlerfrei, `npx vitest run src/i18n` 34 von 34. Der
+Linux-Build ist AppImage, deb und entpacktes Verzeichnis. Start unter Xvfb
+gegen ein leeres Probe-`HERMES_HOME`, nicht gegen ein bestehendes
+`~/.hermes`. Einzelheiten, Hashes und der Startplan:
+[docs/LINUX_DESKTOP.md](docs/LINUX_DESKTOP.md).
 
 ## 1.2.0 - 2026-09-20
 

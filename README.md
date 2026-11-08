@@ -1,15 +1,19 @@
 # Hermes Desktop - deutsche Locale (`de`)
 
-**Version 1.1.0**, 13.09.2026.
+**Version 1.3.0**, 08.11.2026.
 
-Gebaut gegen **Hermes Desktop 0.17.2**, Commit `d595e636c8`.
+Der Patch in diesem Baum ist Fassung 1.2.0 und passt auf **Hermes Desktop
+0.17.6**, Commit `6159bf4d87a32de72869e0b479606ddd2b9977a1`. Er passt nicht
+auf Desktop 0.17.2 / `d595e636c8` (der Pfad `apps/desktop/src/app/capabilities/`
+existiert dort nicht) und nicht auf den aktuellen Upstream-`main`. Das ist
+auch nicht die CLI **0.22.7**. Linux-Paket, Prüfsummen und der Startplan, der
+`/home/pascal/.hermes` nicht anfasst: [docs/LINUX_DESKTOP.md](docs/LINUX_DESKTOP.md).
 
-> Die Statuszeile der laufenden App zeigt eine **andere** Zahl, etwa
-> `v0.21.2 (+19) a84a222`. Das ist kein Widerspruch: `0.21.2` ist die Version
-> des Hermes-**Agenten** (`pyproject.toml`), `0.17.2` die der **Desktop-App**
-> (`apps/desktop/package.json`), und übersetzt ist die Desktop-App. Der
-> Commit-Kurzname in der Statuszeile ist der verlässliche Bezug - gegen ihn
-> passt der Patch.
+> Ältere Statuszeilen zeigten eine Agenten-Version, etwa `v0.21.2`, neben der
+> Desktop-Version `0.17.2`. Das sind zwei Zahlen. Am hier gebauten Stand zeigt
+> die Desktop-Statuszeile **v0.17.6**. Der Agent im selben Quellbaum ist
+> **0.21.3** (`pyproject.toml`, `hermes_cli/__init__.py`). Der Commit
+> `6159bf4d87a32de72869e0b479606ddd2b9977a1` ist der Bezugsstand des Patches.
 
 Vollständige deutsche Übersetzung der Hermes-Desktop-Oberfläche - auf allen
 fünf Ebenen, auf denen Text in dieser Anwendung liegt: Kernkatalog,
