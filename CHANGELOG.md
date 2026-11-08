@@ -4,8 +4,107 @@ Alle nennenswerten Änderungen an diesem Paket. Die Versionsnummer beschreibt
 **dieses Paket**, nicht Hermes selbst. Der Bezugsstand wandert mit den
 Hermes-Updates; welcher es ist, steht beim jeweiligen Eintrag.
 
-Die Statuszeile der App zeigt `v0.21.2`: das ist die Version des
-Hermes-**Agenten**, nicht die der Desktop-App. Zwei Zahlen, zwei Dinge.
+Die Statuszeile der App am Bezugsstand 0.17.6 zeigt `v0.17.6`. Die Version
+des mitgelieferten Agentenquellbaums ist `0.21.3`. Das ist nicht die CLI
+`0.22.7`. Zwei Zahlen, zwei Dinge.
+
+## 1.3.6 - 2026-11-08
+
+Der Anschluss wertet historische Bereitschaft und Kontingente aus der
+Registry nicht als Zulassung. Vor `decide` bleiben nur lebende lokale
+Beobachtungen. Ein normaler Chat läuft denselben Broker-Weg und wird
+abgewiesen. Es wird kein Modell aufgerufen.
+
+## 1.3.5 - 2026-11-08
+
+Loopback-Anschluss `werkzeug/hiron-anschluss/` für den OpenAI-Chat-Vertrag
+von Hermes 0.22.7. Er benutzt den vorhandenen Broker unverändert und ruft
+den Dispatcher nicht auf. Ohne Registratur bleibt der Katalog leer.
+Anbieter-Kontingent bleibt unbekannt. Kein externer Modellaufruf.
+
+## 1.3.4 - 2026-11-08
+
+Der Starter hat die letzte `HERMES_BACKEND_READY`-Zeile der ganzen
+Backend-Logdatei genommen. Eine alte Zeile galt damit schon, bevor dieser
+Lauf etwas geschrieben hatte. Er merkt sich jetzt die Dateigröße vor dem
+Start und liest nur Bytes danach. `run/port` wird erst mit diesem Port
+neu geschrieben. `--no-sandbox` bleibt weg, das Token bleibt aus den Logs.
+
+## 1.3.3 - 2026-11-08
+
+Benutzerinstallation ohne root: `werkzeug/hermes-desktop-installieren.sh`
+legt die AppImage, den Starter und `hermes-desktop.desktop` mit dem Namen
+**Hermes Desktop** unter `XDG_DATA_HOME` ab. `PATH` und `~/.hermes` bleiben
+unberührt. Der Starter benutzt den venv-Interpreter aus `facts.json`,
+`HERMES_DISABLE_LAZY_INSTALLS=1`, `--port 0`, `--skip-build`, `--isolated`,
+ein Token nur in der Prozessumgebung, und `--no-sandbox` nicht.
+`werkzeug/hermes-desktop-launcher.test.sh` ist grün.
+
+`setup.status` und `setup.runtime_check` antworten auf 0.22.7. Ein leeres
+Home liefert `provider_configured: false` und `ok: false`. Das ist die
+Anbieter-Einrichtung, kein hängender Vertrag. `free_tier` heißt dort
+`free_tier_route`; die Entscheidung bleibt `ok`.
+
+## 1.3.2 - 2026-11-08
+
+Kein neues Paket. Der PATH-Launcher `hermes --version` mit leerem
+`HERMES_HOME` endet auf einer Store-Python-Installation mit Exit 1, weil die
+Abhängigkeitengeneration unter `<HERMES_HOME>/installs/<install_key>/` liegt
+und `--version` den Borrow-Sync überspringt. `hermes pm repair` wird dafür
+nicht gebraucht und nicht ausgeführt.
+
+`werkzeug/linux_cli_probe_serve.sh` liest nur `packages.venv.environment` aus
+`facts.json` und startet diesen Interpreter als `python -B -m hermes_cli.main
+serve --skip-build --isolated`, mit leerem Probe-Home und
+`HERMES_DISABLE_LAZY_INSTALLS=1`. Kein fest eingetragener Installations-Hash.
+Gegen Commit `b200f5bc60e3` hier: `--version` und `serve --help` Exit 0.
+Der laufende PC-Probe wird davon nicht neu gestartet.
+
+## 1.3.1 - 2026-11-08
+
+Keine neuen Pakete und keine neuen Übersetzungstexte. v1 bleibt Desktop 0.17.6.
+
+Geprüft wurde, ob diese App ein getrennt gestartetes CLI-0.22.7-`hermes serve`
+über `HERMES_DESKTOP_REMOTE_URL` und `HERMES_DESKTOP_REMOTE_TOKEN` benutzt,
+ohne selbst ein Backend zu starten und ohne das Statusschema herunterzusetzen.
+Beides traf in frischen Verzeichnissen zu: ein Serve-Prozess, Backend-`state.db`
+mit Schema 32, `config.yaml` nicht angelegt, Desktop-Home nur das Log.
+Die Statuszeile zeigte `Client v0.17.6` und `Backend v0.22.7`. Der
+Update-Hinweis wurde nicht ausgelöst. Startskripte:
+`werkzeug/linux_cli_probe_serve.sh` und `werkzeug/linux_desktop_starten.sh`.
+Sie lehnen `~/.hermes` ab, ändern `PATH` nicht und setzen kein `--no-sandbox`.
+
+Der Patch passt nicht auf den Desktop-Stand von Tag `v0.22.7`. Ein v2-Paket
+ist nicht gebaut.
+
+## 1.3.0 - 2026-11-08
+
+Keine neuen Übersetzungstexte. Der vorhandene Patch von 1.2.0 wurde gegen
+Upstream geprüft und ein Linux-Paket der echten Desktop-App gebaut.
+
+Bezugsstand, an dem `git apply` ohne Konflikt sitzt und an dem gebaut wurde:
+**Hermes Desktop 0.17.6**, Commit
+`6159bf4d87a32de72869e0b479606ddd2b9977a1` (2026-09-20, „runner: drop the
+RLIMIT_DATA worker cap“). Electron 40.10.2, electron-builder 26.15.3. Der
+Agent in demselben Commit ist **0.21.3** (Statusschema 30, Config-Schema 45).
+
+Geprüft, nicht angenommen:
+
+- `d595e636c8` ist Desktop **0.17.2**. Die Datei
+  `apps/desktop/src/app/capabilities/plugins/plugins-tab.tsx` gibt es dort
+  nicht (HTTP 404). Der aktuelle Patch zeigt auf diesen Pfad und gilt dort
+  nicht. Die README-Zeile aus Fassung 1.1.0 beschrieb den damaligen Stand.
+- Auf Upstream-`main` vom 08.11.2026 (`110afdd60e3098b86950963b06a792e261bd36a4`,
+  Desktop-Versionsfeld `0.0.0`) schlägt `git apply --check` fehl.
+- Dieselbe Patch-Vorlage passt bytegenau auf 177 Commits am 20.09.2026, vom
+  ersten `5a0fb0f38d2c3d088b286563931ebd95632fc5f6` bis zum gebauten
+  `6159bf4d`. Gebaut wurde der letzte.
+
+`npx tsc --noEmit` fehlerfrei, `npx vitest run src/i18n` 34 von 34. Der
+Linux-Build ist AppImage, deb und entpacktes Verzeichnis. Start unter Xvfb
+gegen ein leeres Probe-`HERMES_HOME`, nicht gegen ein bestehendes
+`~/.hermes`. Einzelheiten, Hashes und der Startplan:
+[docs/LINUX_DESKTOP.md](docs/LINUX_DESKTOP.md).
 
 ## 1.2.0 - 2026-09-20
 
