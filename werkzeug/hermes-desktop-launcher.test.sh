@@ -86,7 +86,7 @@ mkdir -p "$install_root"
 HOME="$install_root" \
 XDG_DATA_HOME="$install_root/.local/share" \
 HERMES_DESKTOP_DATA_DIR="$install_root/.local/share/hermes-desktop" \
-  "$ROOT/werkzeug/hermes-desktop-installieren.sh" "$fake_app" >"$TMP/install.out"
+  bash "$ROOT/werkzeug/hermes-desktop-installieren.sh" "$fake_app" >"$TMP/install.out"
 desk="$install_root/.local/share/applications/hermes-desktop.desktop"
 grep -q '^Name=Hermes Desktop$' "$desk" || fail "desktop name"
 grep -q 'hermes-desktop$' "$desk" || fail "desktop exec"

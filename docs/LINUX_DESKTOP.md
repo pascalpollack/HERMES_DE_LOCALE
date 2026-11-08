@@ -423,7 +423,7 @@ Prüfung: `werkzeug/hermes-desktop-launcher.test.sh`.
 |---|---|
 | `werkzeug/hermes-desktop-starten.sh` | `baa51d8f1f73b9dd44818c031ac0dd4e6b8f8bd9ec9606c9ec4fdacdb70753c6` |
 | `werkzeug/hermes-desktop-installieren.sh` | `620963578aa9bb4db2d0e16eafff754bbe27e33903d69faba09b905e533782b0` |
-| `werkzeug/hermes-desktop-launcher.test.sh` | `a5fbb561df3ea5edc402e3186160d666154de4a302311f9b54ec2777ea0f4e97` |
+| `werkzeug/hermes-desktop-launcher.test.sh` | `981c2b67339602c1a3de4c14a4e4b6a9e223aeadd7809f1b9a2650b164fd8156` |
 | `installer/hermes-desktop-icon.png` | `277c2ed7bed8d9a3c3a09280dfbafaf6546c23a41443491637abe12259684394` |
 
 ## Erster Start auf dem Debian-Rechner
