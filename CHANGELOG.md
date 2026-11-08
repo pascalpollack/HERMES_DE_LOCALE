@@ -8,6 +8,23 @@ Die Statuszeile der App am Bezugsstand 0.17.6 zeigt `v0.17.6`. Die Version
 des mitgelieferten Agentenquellbaums ist `0.21.3`. Das ist nicht die CLI
 `0.22.7`. Zwei Zahlen, zwei Dinge.
 
+## 1.3.1 - 2026-11-08
+
+Keine neuen Pakete und keine neuen Übersetzungstexte. v1 bleibt Desktop 0.17.6.
+
+Geprüft wurde, ob diese App ein getrennt gestartetes CLI-0.22.7-`hermes serve`
+über `HERMES_DESKTOP_REMOTE_URL` und `HERMES_DESKTOP_REMOTE_TOKEN` benutzt,
+ohne selbst ein Backend zu starten und ohne das Statusschema herunterzusetzen.
+Beides traf in frischen Verzeichnissen zu: ein Serve-Prozess, Backend-`state.db`
+mit Schema 32, `config.yaml` nicht angelegt, Desktop-Home nur das Log.
+Die Statuszeile zeigte `Client v0.17.6` und `Backend v0.22.7`. Der
+Update-Hinweis wurde nicht ausgelöst. Startskripte:
+`werkzeug/linux_cli_probe_serve.sh` und `werkzeug/linux_desktop_starten.sh`.
+Sie lehnen `~/.hermes` ab, ändern `PATH` nicht und setzen kein `--no-sandbox`.
+
+Der Patch passt nicht auf den Desktop-Stand von Tag `v0.22.7`. Ein v2-Paket
+ist nicht gebaut.
+
 ## 1.3.0 - 2026-11-08
 
 Keine neuen Übersetzungstexte. Der vorhandene Patch von 1.2.0 wurde gegen

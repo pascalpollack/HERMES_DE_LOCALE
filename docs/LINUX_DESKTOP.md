@@ -231,43 +231,128 @@ warnt dann und nimmt `journal_mode=DELETE` statt WAL. Das betrifft den
 Python-Interpreter, den das Backend wirklich benutzt, nicht das
 Electron-Binary.
 
+## Anbindung an CLI 0.22.7 ohne Autostart
+
+Gemessen am 08.11.2026 nur in frischen Verzeichnissen unter `/tmp/synth-0227`.
+Kein Produktions-Home, kein Login, kein Portal-Klick, kein Modell.
+
+Der Bezugsstand der CLI ist das Git-Tag `v0.22.7`, Commit
+`b200f5bc60e31588ba2cb60e288029c4a54ba5fa`. `hermes --version` dazu:
+`Hermes Agent v0.22.7 (2026.9.24)`, Python 3.14.10. Das Desktop-Paket an
+demselben Tag trägt in `package.json` die Versionsnummer `0.0.0`; die
+Identität der CLI kommt aus dem Install-Stempel bzw. dem Tag. Statusschema
+32, Config-Schema 52. Electron dort 44.9.3, Node `>=26`, Linux-Ziel nur
+AppImage. Der deutsche Patch von 0.17.6 lässt sich dort nicht anwenden
+(`git apply --check` bricht ab). Ein zweites Paket ist daraus nicht gebaut
+worden: die vorhandene App 0.17.6 spricht den dokumentierten Serve-Endpunkt
+an, und die v1-Artefakte bleiben unverändert.
+
+Dokumentierter Endpunkt, beide Seiten:
+
+- Backend: `hermes serve --host 127.0.0.1 --port 9127` mit
+  `HERMES_DASHBOARD_SESSION_TOKEN`. Das ist der kopflose Server, den die
+  Hilfe als Gateway für die Desktop-App beschreibt. Öffentliches
+  `GET /api/status` lieferte `version: 0.22.7`, `config_version: 52`,
+  `latest_config_version: 52`, `auth_required: false`,
+  `auth_providers: ["session-token"]`.
+- Desktop: `HERMES_DESKTOP_REMOTE_URL` und `HERMES_DESKTOP_REMOTE_TOKEN`
+  müssen **beide** gesetzt sein (`desktop-remote-route.ts` bricht sonst ab).
+  `runPrimaryBackendStartup` löst die Remote-Verbindung auf, **bevor** ein
+  lokales `hermes serve` erzeugt wird. Header der REST-Aufrufe:
+  `X-Hermes-Session-Token`.
+
+Ablauf der Messung: Serve mit Python 3.14 und leerem `HERMES_HOME`. Danach
+Desktop 0.17.6 mit einem **anderen** leeren `HERMES_HOME`,
+`HERMES_DESKTOP_IGNORE_EXISTING=1`, URL `http://127.0.0.1:9127` und dem
+Token. Es blieb genau ein `hermes serve` (PID unverändert). Das Log sagt
+`Connecting to remote Hermes backend` und `Remote Hermes backend is ready`,
+nicht `Starting Hermes backend`.
+
+Zustand danach:
+
+| Datei im Backend-Home | Vorher | Nachher |
+|---|---|---|
+| `config.yaml` | fehlt | fehlt |
+| `shared-state.db` | SHA-256 `95d67f72…aa74` | unverändert |
+| `SOUL.md` | SHA-256 `36c1f5a2…506f` | unverändert |
+| `state.db` | fehlt | neu, `schema_version` **32**, 0 Sessions |
+
+Schema 32 ist das Schema von CLI 0.22.7, nicht 30. Die Datei legt der
+0.22.7-Prozess an, wenn die App Sitzungen abfragt. Zusätzlich entstanden
+`skills/.curator_state` und `state/dashboard_clients.heartbeat`. Das
+Desktop-Home enthielt nur `logs/desktop.log`. Kein `hermes-agent`-Checkout,
+kein zweites `state.db`.
+
+Das Fenster war deutsch (`lang=de`): Sitzungen, Neue Sitzung, Fähigkeiten,
+Nachrichten, Artefakte, Geplante Jobs. Die Statuszeile zeigte
+`Client v0.17.6` und `Backend v0.22.7 (aktualisieren)`.
+
+![Desktop 0.17.6 an CLI 0.22.7](screenshots/linux-04-remote-0227.png)
+
+Ein Update-Hinweis
+(`Update bereit`) lag im DOM. Er wurde nicht angeklickt. `Jetzt aktualisieren`
+würde das entfernte Backend das Update ausführen lassen
+(`availableBodyBackend` / `applyingBodyBackend`). Das ist der Weg, auf dem
+ein Klick das Checkout verändern kann. Nicht klicken.
+
+Der Einrichtungsdialog (`Richte Hermes Agent ein`, Nous Portal) erschien,
+weil das leere Probe-Home keinen Modellanbieter hat. Nous Portal, Login und
+API-Key wurden nicht benutzt. Ein Satz des Backends blieb englisch.
+
+Damit ist die Paarung für einen **leeren** Probe-Lauf tragfähig, wenn URL
+und Token gesetzt sind und niemand das Update auslöst. Sie ist kein Beleg,
+dass die App das Produktions-Home `/home/pascal/.hermes` öffnen darf. Der
+erste Lauf auf dem Rechner bleibt bei leeren Verzeichnissen. Auch der
+Remote-Modus liest `HERMES_HOME` der Desktop-Prozesses
+(`migrateActiveProfileIfMissing`, `logs/desktop.log`). Deshalb bekommt die
+App ein eigenes Probe-Home, nicht das Home des Backends und nicht
+`~/.hermes`.
+
+Ein Desktop-Neubau passend zu 0.22.7 ist nicht erfolgt. Er brauchte Node
+`>=26` und Electron 44.9.3, und der vorhandene Patch passt nicht. Solange
+der Probe-Lauf über den Serve-Endpunkt das Fenster zeigt, bleibt v1 das
+Paket.
+
 ## Erster Start auf dem Debian-Rechner
 
-Nur Probe-Verzeichnisse. Nicht `/home/pascal/.hermes`, nicht
-`~/.config/Hermes`, solange der Probe-Lauf nicht abgeschlossen ist.
+Nur leere Probe-Verzeichnisse. Nicht `/home/pascal/.hermes`. Die Skripte
+brechen ab, wenn der Pfad dieses Home oder `$HOME/.hermes` ist. Sie ändern
+`PATH` nicht und installieren nichts.
 
-Absolute Pfade, damit das Umsetzen von `HOME` die anderen Verzeichnisse nicht verschiebt. `HERMES_DESKTOP_IGNORE_EXISTING=1` lässt die vorhandene CLI 0.22.7 aus.
+Zuerst die schon vorhandene CLI, mit eigenem leeren Home und einem
+selbst gewählten Token:
 
 ```bash
 PROBE=/home/pascal/hermes-desktop-probe
-mkdir -p "$PROBE/unixhome" "$PROBE/userdata" "$PROBE/xdg" "$PROBE/home"
-
-HOME="$PROBE/unixhome" \
-XDG_CONFIG_HOME="$PROBE/xdg" \
-HERMES_HOME="$PROBE/home" \
-HERMES_DESKTOP_USER_DATA_DIR="$PROBE/userdata" \
-HERMES_DESKTOP_IGNORE_EXISTING=1 \
-LANG=de_DE.UTF-8 \
-LC_ALL=de_DE.UTF-8 \
-./Hermes-0.17.6-linux-x86_64.AppImage --appimage-extract-and-run
+HERMES_DASHBOARD_SESSION_TOKEN='ein-synthetisches-token' \
+  werkzeug/linux_cli_probe_serve.sh "$PROBE/backend-home"
 ```
 
-Erwartung dieses Schalters: Fenster der echten App, Ersteinrichtung,
-**kein** Klon nach `~/.hermes`. Deutsch erscheint erst, wenn ein Backend
-`/api/config` liefert und `display.language` fehlt (dann gilt die
-OS-Sprache `de`) oder `de` gespeichert ist. Ohne Backend bleibt die
-Oberfläche englisch. Das ist das gemessene Verhalten dieser Version.
+Danach die App 0.17.6. Ohne FUSE `HERMES_APPIMAGE_EXTRACT=1` setzen. Das
+Skript prüft `unshare --user` und hängt **nicht** `--no-sandbox` an.
 
-Nicht anklicken: `Install Hermes locally`, `Repair install`, `Nous Portal`,
-Login. Nicht `HERMES_DESKTOP_HERMES` auf die CLI 0.22.7 setzen, um das
-echte Home zu lesen. Nicht die echten Dateien `config.yaml` oder `state.db`
-in das Probe-Home kopieren.
+```bash
+HERMES_DESKTOP_REMOTE_URL=http://127.0.0.1:9127 \
+HERMES_DESKTOP_REMOTE_TOKEN='ein-synthetisches-token' \
+HERMES_APPIMAGE_EXTRACT=1 \
+LANG=de_DE.UTF-8 \
+  werkzeug/linux_desktop_starten.sh "$PROBE" \
+  ./Hermes-0.17.6-linux-x86_64.AppImage
+```
 
-Wenn das Fenster sofort mit einem Sandbox-Fehler endet, ist das der
-User-Namespace-/AppArmor-Fall von oben. Dann ist der nächste Kandidat das
-deb, nach einer eigenen Sicherung, weil dessen `postinst` root braucht.
-Auch das deb mit denselben vier Variablen starten, nicht über das
-Starter-Icon, das `HERMES_HOME` nicht setzt.
+Die App schreibt nach `$PROBE/desktop-home` und `$PROBE/userdata`. Die CLI
+schreibt nach `$PROBE/backend-home`. Keines von beiden ist `~/.hermes`.
+
+Erwartung aus der Messung: Fenster der echten App, deutsch, Statuszeile
+`Client v0.17.6` und `Backend v0.22.7`, genau ein `hermes serve`. Nicht
+anklicken: `Jetzt aktualisieren`, `Install Hermes locally`, `Repair install`,
+`Nous Portal`, Login, `Ich habe einen API-Key`.
+
+Wenn `unshare --user true` fehlschlägt, nicht mit `--no-sandbox` wiederholen.
+Dann bleibt der Sandbox-Fehler der Befund. Das deb ist der Kandidat, dessen
+`postinst` `chrome-sandbox` setuid setzt, und das braucht root. Debian 13
+ist damit nicht als lauffähig belegt. Ein fehlender Session-Bus (DBus-Fehler)
+hat in der Ubuntu-Messung das Fenster nicht verhindert.
 
 ## Build nachvollziehen
 
