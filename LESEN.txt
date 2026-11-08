@@ -1,0 +1,20 @@
+Deutsches Sprachpaket für Hermes Desktop 0.17.6.
+Kein Programm, kein Backend, kein Profil.
+
+Linux und Git Bash, am Quellbaum:
+
+  bash installer/Deutsch_installieren.sh /pfad/zum/hermes-agent
+  bash installer/Deutsch_zuruecknehmen.sh /pfad/zum/hermes-agent
+
+Windows, nur mit eigenem Ordner paket neben der Batch:
+
+  installer\Deutsch_installieren.bat
+  installer\Deutsch_zuruecknehmen.bat
+
+Der Ordner paket liegt nicht bei. Eine schon installierte App liest
+dieses Paket nicht. Erklärung, Fassung und Lizenz: docs/SPRACHPAKET.md
+und LICENSE.
+
+Prüfung der Quellen, TypeScript aus einem Hermes-Checkout:
+
+  node werkzeug/locale_pruefen.mjs --typescript /pfad/node_modules/typescript/lib/typescript.js

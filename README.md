@@ -1,23 +1,23 @@
 # Hermes Desktop - deutsche Locale (`de`)
 
-**Version 1.1.0**, 13.09.2026.
+**Version 1.2.1**, 08.11.2026.
 
-Gebaut gegen **Hermes Desktop 0.17.2**, Commit `d595e636c8`.
+Der Patch dieser Fassung gilt für **Hermes Desktop 0.17.6**, Commit
+`6159bf4d87a32de72869e0b479606ddd2b9977a1`. Er gilt nicht für Desktop 0.17.2.
+Einbau und Zurücknehmen, ohne die App mitzuliefern: [docs/SPRACHPAKET.md](docs/SPRACHPAKET.md).
 
-> Die Statuszeile der laufenden App zeigt eine **andere** Zahl, etwa
-> `v0.21.2 (+19) a84a222`. Das ist kein Widerspruch: `0.21.2` ist die Version
-> des Hermes-**Agenten** (`pyproject.toml`), `0.17.2` die der **Desktop-App**
-> (`apps/desktop/package.json`), und übersetzt ist die Desktop-App. Der
-> Commit-Kurzname in der Statuszeile ist der verlässliche Bezug - gegen ihn
-> passt der Patch.
+> Die Desktop-Version und die Agenten-Version sind zwei Zahlen. Übersetzt ist
+> die Desktop-App 0.17.6. Im selben Commit ist der Agent 0.21.3.
 
 Vollständige deutsche Übersetzung der Hermes-Desktop-Oberfläche - auf allen
 fünf Ebenen, auf denen Text in dieser Anwendung liegt: Kernkatalog,
 Plugin-Sprachpakete, Startbildschirm, Tab-Beschriftungen und Plugin-Stammdaten.
 Was sich wann geändert hat, steht in [CHANGELOG.md](CHANGELOG.md).
 
-**Vollständig heißt hier vollständig: 3773 von 3773 Schlüsselpfaden.** Die
-Datei ist als `Translations` typisiert, und dieser Typ verlangt jeden Schlüssel.
+**Vollständig heißt hier vollständig gegen `en.ts`.** `de.ts` ist als
+`Translations` typisiert, und dieser Typ verlangt jeden Schlüssel. Der
+statische Vergleich der Blätter ergibt 3961 von 3961. Die ältere Zahl 3773
+gehört zum Katalog von Desktop 0.17.2.
 Ein fehlender wäre ein Übersetzungsfehler beim Bauen, kein stiller Rückfall auf
 Englisch. `defineLocale()` für Teilfassungen wird bewusst **nicht** benutzt.
 
