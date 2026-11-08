@@ -406,7 +406,7 @@ Danach steht Hermes Desktop im Anwendungsmenü. Der Starter
 - setzt `HERMES_DISABLE_LAZY_INSTALLS=1`
 - legt Backend-Home und Desktop-Home frisch unter dem Installationsverzeichnis an, mit `LESE-MICH.txt`
 - erzeugt ein Sitzungs-Token pro Lauf, nur in der Prozessumgebung, nicht in den Logs
-- wartet auf `HERMES_BACKEND_READY`, dann startet die AppImage ohne `--no-sandbox`
+- wartet auf eine `HERMES_BACKEND_READY`-Zeile, die dieser Lauf an das Backend-Log anhängt. Eine ältere Zeile in derselben Datei ist ein alter Port und wird nicht genommen. Danach startet die AppImage ohne `--no-sandbox`
 - hält eine Sperre; ein zweiter Klick versucht nur, das Fenster zu fokussieren
 - beendet beim Schließen nur das Backend, dessen `HERMES_HOME` dieses Backend-Home ist
 - bricht sichtbar ab, wenn `unshare --user` fehlschlägt, und nennt `logs/launcher.log`
@@ -421,9 +421,9 @@ Prüfung: `werkzeug/hermes-desktop-launcher.test.sh`.
 
 | Datei | SHA-256 |
 |---|---|
-| `werkzeug/hermes-desktop-starten.sh` | `baa51d8f1f73b9dd44818c031ac0dd4e6b8f8bd9ec9606c9ec4fdacdb70753c6` |
+| `werkzeug/hermes-desktop-starten.sh` | `26268b3af0cf903544fbbc5eaf0b9be50766a1e8e84ee4c08f75e2889602df73` |
 | `werkzeug/hermes-desktop-installieren.sh` | `620963578aa9bb4db2d0e16eafff754bbe27e33903d69faba09b905e533782b0` |
-| `werkzeug/hermes-desktop-launcher.test.sh` | `981c2b67339602c1a3de4c14a4e4b6a9e223aeadd7809f1b9a2650b164fd8156` |
+| `werkzeug/hermes-desktop-launcher.test.sh` | `e951c4787ab5b516e1748010ec5f2c149986d0eeea1a7c5344b69d120fc1e402` |
 | `installer/hermes-desktop-icon.png` | `277c2ed7bed8d9a3c3a09280dfbafaf6546c23a41443491637abe12259684394` |
 
 ## Erster Start auf dem Debian-Rechner

@@ -128,4 +128,108 @@ if grep -R -E 'HERMES_DASHBOARD_SESSION_TOKEN=|HERMES_DESKTOP_REMOTE_TOKEN=' "$r
   fail "token was written to a log"
 fi
 wait "$first" || true
+
+# A ready line already in the log is an old port. This run must wait for
+# its own line and must not hand the GUI that old port.
+stale="$TMP/stale-data"
+mkdir -p "$stale/logs" "$stale/run"
+printf '%s\n' 'HERMES_BACKEND_READY port=45553' > "$stale/logs/backend.log"
+printf '%s\n' 45553 > "$stale/run/port"
+slow="$TMP/slow-venv/bin"
+mkdir -p "$slow"
+cat > "$slow/python" << 'EOF'
+#!/usr/bin/env bash
+sleep 0.6
+echo "HERMES_BACKEND_READY port=45079"
+while true; do sleep 0.2; done
+EOF
+chmod +x "$slow/python"
+slow_checkout="$TMP/slow-checkout"
+mkdir -p "$slow_checkout"
+printf '%s\n' '[project]' 'name = "slow"' > "$slow_checkout/pyproject.toml"
+slow_key="$(hermes_desktop_install_key "$slow_checkout")"
+mkdir -p "$TMP/slow-root/installs/$slow_key"
+python3 - << PY
+import json
+open("$TMP/slow-root/installs/$slow_key/facts.json", "w", encoding="utf-8").write(json.dumps({
+    "packages": {"venv": {"environment": "$TMP/slow-venv"}},
+}))
+PY
+printf '%s\n' 'home = /usr' > "$TMP/slow-venv/pyvenv.cfg"
+record_app="$TMP/record-app"
+cat > "$record_app" << EOF
+#!/usr/bin/env bash
+printf '%s\n' "\${HERMES_DESKTOP_REMOTE_URL:-}" > "$TMP/seen-url"
+# The token is present in this process and must not be written.
+sleep 30
+EOF
+chmod +x "$record_app"
+HOME="$install_root" \
+HERMES_DESKTOP_DATA_DIR="$stale" \
+HERMES_DESKTOP_APPIMAGE="$record_app" \
+HERMES_CHECKOUT="$slow_checkout" \
+HERMES_DATA_ROOT="$TMP/slow-root" \
+HERMES_DESKTOP_READY_SECONDS=5 \
+  "$launcher" >"$TMP/stale.out" 2>"$TMP/stale.err" &
+stale_pid=$!
+seen=""
+for _ in $(seq 1 40); do
+  if [[ -f "$TMP/seen-url" ]]; then
+    seen="$(cat "$TMP/seen-url")"
+    break
+  fi
+  sleep 0.1
+done
+[[ "$seen" == "http://127.0.0.1:45079" ]] || fail "gui url is '$seen'"
+[[ "$(cat "$stale/run/port")" == "45079" ]] || fail "port file $(cat "$stale/run/port")"
+grep -q '127.0.0.1:45553' "$TMP/stale.err" && fail "launcher announced the old port"
+grep -q '127.0.0.1:45079' "$TMP/stale.err" || fail "launcher did not announce 45079"
+if grep -R -E 'HERMES_DASHBOARD_SESSION_TOKEN=|HERMES_DESKTOP_REMOTE_TOKEN=' "$stale/logs" >/dev/null 2>&1; then
+  fail "token was written to a log"
+fi
+kill "$(cat "$stale/run/desktop.pid")" 2>/dev/null || true
+wait "$stale_pid" || true
+
+# No new ready line: do not keep or announce the old port.
+dead="$TMP/dead-data"
+mkdir -p "$dead/logs" "$dead/run"
+printf '%s\n' 'HERMES_BACKEND_READY port=45553' > "$dead/logs/backend.log"
+printf '%s\n' 45553 > "$dead/run/port"
+rm -f "$TMP/seen-url"
+dead_app="$TMP/dead-app"
+cat > "$dead_app" << EOF
+#!/usr/bin/env bash
+printf '%s\n' "\${HERMES_DESKTOP_REMOTE_URL:-}" > "$TMP/seen-url-dead"
+EOF
+chmod +x "$dead_app"
+dead_bin="$TMP/dead-venv/bin"
+mkdir -p "$dead_bin"
+printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$dead_bin/python"
+chmod +x "$dead_bin/python"
+printf '%s\n' 'home = /usr' > "$TMP/dead-venv/pyvenv.cfg"
+dead_checkout="$TMP/dead-checkout"
+mkdir -p "$dead_checkout"
+printf '%s\n' '[project]' 'name = "dead"' > "$dead_checkout/pyproject.toml"
+dead_key="$(hermes_desktop_install_key "$dead_checkout")"
+mkdir -p "$TMP/dead-root/installs/$dead_key"
+python3 - << PY
+import json
+open("$TMP/dead-root/installs/$dead_key/facts.json", "w", encoding="utf-8").write(json.dumps({
+    "packages": {"venv": {"environment": "$TMP/dead-venv"}},
+}))
+PY
+set +e
+HOME="$install_root" \
+HERMES_DESKTOP_DATA_DIR="$dead" \
+HERMES_DESKTOP_APPIMAGE="$dead_app" \
+HERMES_CHECKOUT="$dead_checkout" \
+HERMES_DATA_ROOT="$TMP/dead-root" \
+HERMES_DESKTOP_READY_SECONDS=2 \
+  "$launcher" >"$TMP/dead.out" 2>"$TMP/dead.err"
+dead_status=$?
+set -e
+[[ "$dead_status" -ne 0 ]] || fail "stale-only log was treated as ready"
+grep -q '127.0.0.1:45553' "$TMP/dead.err" && fail "dead run announced 45553"
+[[ ! -f "$dead/run/port" ]] || fail "stale port file was kept"
+[[ ! -f "$TMP/seen-url-dead" ]] || fail "gui was started from the old port"
 echo OK

@@ -8,6 +8,14 @@ Die Statuszeile der App am Bezugsstand 0.17.6 zeigt `v0.17.6`. Die Version
 des mitgelieferten Agentenquellbaums ist `0.21.3`. Das ist nicht die CLI
 `0.22.7`. Zwei Zahlen, zwei Dinge.
 
+## 1.3.4 - 2026-11-08
+
+Der Starter hat die letzte `HERMES_BACKEND_READY`-Zeile der ganzen
+Backend-Logdatei genommen. Eine alte Zeile galt damit schon, bevor dieser
+Lauf etwas geschrieben hatte. Er merkt sich jetzt die Dateigröße vor dem
+Start und liest nur Bytes danach. `run/port` wird erst mit diesem Port
+neu geschrieben. `--no-sandbox` bleibt weg, das Token bleibt aus den Logs.
+
 ## 1.3.3 - 2026-11-08
 
 Benutzerinstallation ohne root: `werkzeug/hermes-desktop-installieren.sh`

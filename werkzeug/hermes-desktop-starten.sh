@@ -162,6 +162,21 @@ hermes_desktop_main() {
   export HERMES_DASHBOARD_SESSION_TOKEN="$token"
   export HERMES_DESKTOP_REMOTE_TOKEN="$token"
 
+  # The backend log is appended. A ready line already in it belongs to an
+  # earlier run. This run accepts only bytes written after this point.
+  if [[ -s "$backend_log" ]]; then
+    local last_byte=""
+    last_byte="$(tail -c 1 "$backend_log" || true)"
+    if [[ "$last_byte" != $'\n' ]]; then
+      printf '\n' >> "$backend_log"
+    fi
+  fi
+  local log_offset=0
+  if [[ -f "$backend_log" ]]; then
+    log_offset="$(stat -c '%s' "$backend_log")"
+  fi
+  rm -f "$run/port"
+
   hermes_desktop_log "$launcher_log" "Starte Backend. Interpreter aus facts.json. Log: $backend_log"
   (
     cd "$checkout"
@@ -177,14 +192,16 @@ hermes_desktop_main() {
   printf '%s\n' "$backend_pid" > "$run/backend.pid"
 
   port=""
-  local deadline=$((SECONDS + 60)) line
+  local ready_seconds="${HERMES_DESKTOP_READY_SECONDS:-60}"
+  [[ "$ready_seconds" =~ ^[0-9]+$ ]] || ready_seconds=60
+  local deadline=$((SECONDS + ready_seconds)) line
   while [[ "$SECONDS" -lt "$deadline" ]]; do
     if ! hermes_desktop_pid_alive "$backend_pid"; then
       hermes_desktop_log "$launcher_log" "Backend endete vor der Bereitmeldung. Log: $backend_log"
       exit 1
     fi
     if [[ -f "$backend_log" ]]; then
-      line="$(grep -E '^HERMES_BACKEND_READY port=[0-9]+$' "$backend_log" | tail -n 1 || true)"
+      line="$(tail -c +$((log_offset + 1)) "$backend_log" 2>/dev/null | grep -E '^HERMES_BACKEND_READY port=[0-9]+$' | tail -n 1 || true)"
       if [[ -n "$line" ]]; then
         port="${line#HERMES_BACKEND_READY port=}"
         break
