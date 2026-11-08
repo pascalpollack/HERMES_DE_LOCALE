@@ -1,0 +1,48 @@
+Loopback-Anschluss, kein Anbieteraufruf.
+
+Hermes 0.22.7 spricht einen eigenen Endpunkt über
+providers.<name>.api mit transport openai_chat an. Dieses Programm
+bindet nur 127.0.0.1 und spricht /v1/models und /v1/chat/completions.
+Der Broker daneben ist die unveränderte Werkstatt-Datei model_broker.py.
+Der Dispatcher wird nicht aufgerufen: entscheide routet Umschläge an
+eine Hermes-CLI, nicht diese HTTP-Strecke.
+
+Start, Token nur in der Umgebung, State nicht unter einem Hermes-Home:
+
+  HIRON_ROUTER_TOKEN='ein-lokales-token' \
+    bash werkzeug/hiron-anschluss/starten.sh
+  curl -s http://127.0.0.1:$(cat "${XDG_STATE_HOME:-$HOME/.local/state}/hiron-openai-anschluss/port")/health
+  bash werkzeug/hiron-anschluss/stoppen.sh
+
+Stoppen beendet nur die Pid, deren Kommando openai_anschluss.py enthält.
+Homes, Sitzungen und die JSONL-Sicherung bleiben.
+
+Ohne HIRON_MODEL_REGISTRY ist der Katalog leer und ein Chat endet mit
+registry_absent. Die Registraturdatei der Werkstatt liegt nicht in der
+übergebenen Quelle. Sie wird hier nicht erfunden. Ein Hermes-Chat trägt
+die Aufnahme-Fakten des Brokers nicht. Der Broker bleibt dann zu.
+Kontingent Verbrauch, Rest und Reset sind unknown. local_usage zählt
+nur dieses Programm.
+
+Eine LOCAL-Route wird nur an HIRON_LOCAL_BACKEND_URL weitergereicht,
+und nur wenn der Host 127.0.0.1, localhost oder ::1 ist. Eine andere
+Route öffnet keine Verbindung. Ein synthetischer Stub ist kein Beleg,
+dass ein echtes Modell erreicht wurde.
+
+Hermes zeigt auf den Anschluss erst nach eigener Freigabe, in einem
+Profil, das nicht das Produktionshome ist. Beispiel, nicht ausgeführt:
+
+  providers:
+    hiron-werkstatt:
+      api: http://127.0.0.1:<port>/v1
+      api_key: <dasselbe lokale Token>
+      transport: openai_chat
+      discover_models: true
+
+model.default erst setzen, wenn /v1/models eine Kennung nennt, die
+schon in der echten Registratur steht.
+
+Zurück: stoppen.sh, dann das State-Verzeichnis dieses Anschlusses
+löschen. Die Hermes-Konfiguration, falls sie später ergänzt wurde,
+von Hand auf den vorigen Provider setzen. Diese Dateien schreiben
+sie nicht.

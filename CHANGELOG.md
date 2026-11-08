@@ -8,6 +8,13 @@ Die Statuszeile der App am Bezugsstand 0.17.6 zeigt `v0.17.6`. Die Version
 des mitgelieferten Agentenquellbaums ist `0.21.3`. Das ist nicht die CLI
 `0.22.7`. Zwei Zahlen, zwei Dinge.
 
+## 1.3.5 - 2026-11-08
+
+Loopback-Anschluss `werkzeug/hiron-anschluss/` für den OpenAI-Chat-Vertrag
+von Hermes 0.22.7. Er benutzt den vorhandenen Broker unverändert und ruft
+den Dispatcher nicht auf. Ohne Registratur bleibt der Katalog leer.
+Anbieter-Kontingent bleibt unbekannt. Kein externer Modellaufruf.
+
 ## 1.3.4 - 2026-11-08
 
 Der Starter hat die letzte `HERMES_BACKEND_READY`-Zeile der ganzen
