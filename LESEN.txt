@@ -1,20 +1,21 @@
-Deutsches Sprachpaket für Hermes Desktop 0.17.6.
-Kein Programm, kein Backend, kein Profil.
+SOURCE-PATCH-NOT-BINARY-LANGUAGE-PACK
 
-Linux und Git Bash, am Quellbaum:
+Quellpatch für Hermes Desktop 0.17.6. Keine fertige App, kein Sprachpaket
+zum Drauflegen, kein Ordner paket.
+
+Linux und Git Bash:
 
   bash installer/Deutsch_installieren.sh /pfad/zum/hermes-agent
   bash installer/Deutsch_zuruecknehmen.sh /pfad/zum/hermes-agent
 
-Windows, nur mit eigenem Ordner paket neben der Batch:
+Windows, dieselbe Wirkung, die Batch ruft nur Git Bash auf:
 
-  installer\Deutsch_installieren.bat
-  installer\Deutsch_zuruecknehmen.bat
+  installer\Deutsch_quellpatch_einspielen.bat PFAD\zum\hermes-agent
+  installer\Deutsch_quellpatch_zuruecknehmen.bat PFAD\zum\hermes-agent
 
-Der Ordner paket liegt nicht bei. Eine schon installierte App liest
-dieses Paket nicht. Erklärung, Fassung und Lizenz: docs/SPRACHPAKET.md
-und LICENSE.
+Git genügt zum Einspielen. Ein späterer eigener Build braucht Node
+^22.22.0 oder ^24.11.0 oder >=26, und npm <11.10.0 oder >=11.17.0.
+Dieses Paket baut nicht.
 
-Prüfung der Quellen, TypeScript aus einem Hermes-Checkout:
-
-  node werkzeug/locale_pruefen.mjs --typescript /pfad/node_modules/typescript/lib/typescript.js
+Die alten Ganz-App-Batches liegen im Repo unter installer/legacy-ganze-app/
+und sind in diesem Quell-ZIP nicht enthalten.

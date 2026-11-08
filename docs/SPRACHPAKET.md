@@ -1,8 +1,7 @@
-# Deutsches Sprachpaket für Hermes Desktop
+# SOURCE-PATCH-NOT-BINARY-LANGUAGE-PACK
 
-Das ist die deutsche Oberfläche als Quelle. Es ist kein Hermes-Programm,
-kein Installer für ein Backend und kein Ersatz für eine vorhandene
-Installation.
+Quellpatch der deutschen Oberfläche. Kein installierbares Sprachpaket,
+kein Programm, kein Tausch von `Hermes.exe` oder `app.asar`.
 
 ## Worauf es passt
 
@@ -20,9 +19,9 @@ Desktop-Commit 0.17.6 ist 0.21.3. Zwei Versionsnummern.
 
 Deutsch ist im Upstream nicht enthalten (Issue 51217).
 
-## Linux, am Quellbaum
+## Linux und Git Bash
 
-Im entpackten Sprachpaket, mit einem Git-Checkout von Desktop 0.17.6:
+Am Git-Checkout von Desktop 0.17.6:
 
 ```bash
 bash installer/Deutsch_installieren.sh /pfad/zum/hermes-agent
@@ -31,41 +30,41 @@ bash installer/Deutsch_zuruecknehmen.sh /pfad/zum/hermes-agent
 
 Das erste spielt den Patch ein, das zweite nimmt nur diese Änderung zurück.
 Beides bricht ab, wenn die Desktop-Version nicht 0.17.6 ist oder der Patch
-nicht sauber passt. Es wird nicht gebaut, nichts installiert und kein
-Home-Verzeichnis angefasst.
+nicht sauber passt. Es wird nicht gebaut und kein Home-Verzeichnis angefasst.
+Python ist dafür nicht nötig.
 
-Danach baut man die Desktop-App selbst, im Quellbaum unter `apps/desktop`.
-Dieses Paket tut das nicht.
+## Windows
 
-## Windows, am Quellbaum
-
-Dieselben zwei Befehle in Git Bash, gegen denselben Checkout. Die
-`.bat`-Dateien sind ein anderer Weg: sie ersetzen eine schon gebaute
-`win-unpacked`-Installation, und nur dann, wenn neben der Batch ein Ordner
-`paket` mit `Hermes.exe` und `resources` liegt. Diesen Ordner enthält das
-Sprachpaket nicht.
+Dieselben zwei Befehle in Git Bash. Ohne geöffnete Bash starten die
+Quellpatch-Batches nur `bash.exe` von Git for Windows und übergeben den
+Checkout-Pfad:
 
 ```bat
-installer\Deutsch_installieren.bat
-installer\Deutsch_zuruecknehmen.bat
+installer\Deutsch_quellpatch_einspielen.bat PFAD\zum\hermes-agent
+installer\Deutsch_quellpatch_zuruecknehmen.bat PFAD\zum\hermes-agent
 ```
 
-`Deutsch_zuruecknehmen.bat` stellt die Sicherung
-`win-unpacked.vor-deutsch` wieder her. Ohne diese Sicherung löscht sie
-nichts. Sie löscht auch keine Profile.
+Sie kopieren keine Programmdatei. Fehlt Git Bash, enden sie mit Exit 2
+und nennen den Befehl für eine offene Git Bash.
 
-## Was nicht geht
+## Voraussetzungen für einen späteren eigenen Build
 
-Die Texte hängen am Build. `src/i18n/catalog.ts` importiert `de.ts`, und
-`de.ts` ist als `Translations` typisiert, nicht als nachladbare Datei.
-Eine fertige Windows- oder Linux-Installation liest dieses Paket nicht
-ein. Nur `app.asar` zu tauschen scheitert an der Prüfsumme, die im
-Programm selbst steht. Deshalb gibt es hier kein eigenständiges Sprachpaket
-für eine schon installierte App.
+Zum Einspielen reicht Git. Dieses Paket ruft Node nicht auf und entscheidet
+nicht, ob eine App gebaut wird. Wer den gepatchten Checkout später selbst
+übersetzt, braucht die in `package.json` genannte Spanne von Commit
+`6159bf4d87a32de72869e0b479606ddd2b9977a1`: Node
+`^22.22.0 || ^24.11.0 || >=26`, npm `<11.10.0 || >=11.17.0`.
 
-Wer die `.bat` benutzt, braucht ein `paket`, das zur installierten
-Desktop-Version passt. Das ist eine komplette Programmfassung, kein
-Sprachpaket, und sie liegt nicht bei.
+## Was das nicht ist
+
+Die Texte hängen am Build. `src/i18n/catalog.ts` importiert `de.ts`.
+Eine fertige Windows- oder Linux-Installation liest diesen Patch nicht.
+`app.asar` allein zu tauschen scheitert an der Prüfsumme im Programm.
+Dieses Paket umgeht diese Prüfung nicht und legt keine Programmdatei bei.
+
+`installer/legacy-ganze-app/` bleibt im Git-Repo liegen. Die Batches dort
+ersetzen eine ganze gebaute App und verlangen einen Ordner `paket`, den
+es hier nicht gibt. Sie sind nicht im Quell-ZIP.
 
 ## Lizenz
 
@@ -98,6 +97,8 @@ nichts, `Deutsch_zuruecknehmen.sh` entfernt ihn, ein zweiter Rücklauf
 bricht ab. Ein Baum mit Desktop 0.17.2 wird abgelehnt und bleibt ohne
 `de.ts`. Das ist ein echter `git apply` gegen diesen Commit, kein Mock.
 
-Nicht geprüft: Start unter Windows, ein Klick in einer laufenden App,
-eine schon installierte Linux-Fassung. Dazu fehlt genau das Programm,
-das dieses Paket nicht enthält.
+Die Windows-Batches `Deutsch_quellpatch_*.bat` wurden nicht unter Windows
+gestartet. Sie rufen nur die hier geprüften Shell-Skripte auf.
+
+Nicht geprüft: ein Klick in einer laufenden App und eine schon installierte
+Fassung. Dazu fehlt das Programm, das dieses Paket nicht enthält.

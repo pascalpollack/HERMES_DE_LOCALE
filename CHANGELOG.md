@@ -7,6 +7,15 @@ Hermes-Updates; welcher es ist, steht beim jeweiligen Eintrag.
 Die Desktop-Version und die Agenten-Version sind zwei Zahlen. Übersetzt ist
 die Desktop-App.
 
+## 1.2.2 - 2026-11-08
+
+Die Weitergabe ist nur der Quellpatch. `README.md` beginnt mit
+`SOURCE-PATCH-NOT-BINARY-LANGUAGE-PACK`. Windows spielt denselben Patch
+über Git Bash ein, wahlweise über
+`installer/Deutsch_quellpatch_einspielen.bat`, das nur Bash startet.
+Die alten Ganz-App-Batches liegen unter `installer/legacy-ganze-app/` und
+sind nicht der Einbau. Es wird keine App gebaut und keine Prüfsumme umgangen.
+
 ## 1.2.1 - 2026-11-08
 
 Weitergabe als Sprachpaket, ohne Programmpaket. `docs/SPRACHPAKET.md` sagt,

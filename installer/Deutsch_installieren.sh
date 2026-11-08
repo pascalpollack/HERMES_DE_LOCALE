@@ -9,8 +9,8 @@
 
 set -euo pipefail
 
-hier="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-patch="$(cd "$hier/.." && pwd)/0001-hermes-desktop-german-locale.patch"
+hier="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+patch="$(cd "$hier/.." && pwd -P)/0001-hermes-desktop-german-locale.patch"
 ziel="${1:?Pfad zum hermes-agent-Quellbaum}"
 
 if [[ ! -f "$patch" ]]; then
@@ -26,7 +26,11 @@ if ! git -C "$ziel" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 2
 fi
 
-version="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["version"])' "$ziel/apps/desktop/package.json")"
+version="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$ziel/apps/desktop/package.json" | head -n 1)"
+if [[ -z "$version" ]]; then
+  echo "Versionsfeld in apps/desktop/package.json nicht lesbar. Nichts geändert." >&2
+  exit 2
+fi
 if [[ "$version" != "0.17.6" ]]; then
   echo "Desktop-Version ist $version. Dieses Sprachpaket gilt für 0.17.6." >&2
   exit 2
